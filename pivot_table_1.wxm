@@ -21,11 +21,11 @@ Note, that plots *will not work* in this sandbox.
 /* [wxMaxima: input   start ] */
 /* No trailing slash. */
 /*Santiago details*/
-
+/*
 maximaplatform:"win"$
 stacklocation:"c:/tmp/stackroot"$
 stacktmplocation:"c:/tmp/stackroot"$
-
+*/
 
 /*Mary details*/
 /*
@@ -35,11 +35,11 @@ stacktmplocation:""$
 */
 
 /*Dan details*/
-/*
-maximaplatform:""$
-stacklocation:""$
-stacktmplocation:""$
-*/
+
+maximaplatform:"win"$
+stacklocation:"c:/tmp/stackroot"$
+stacktmplocation:"c:/tmp/stackroot"$
+
 
 /* For MS platforms you normally need to explicitly set the path.
    Use the forward slash as a directory seperator.
@@ -190,4 +190,3 @@ coord_list;
 
 /* Old versions of Maxima abort on loading files that end in a comment. */
 "Created with wxMaxima 22.04.0"$
-
