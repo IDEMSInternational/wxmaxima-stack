@@ -190,3 +190,4 @@ coord_list;
 
 /* Old versions of Maxima abort on loading files that end in a comment. */
 "Created with wxMaxima 22.04.0"$
+
