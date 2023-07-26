@@ -112,6 +112,7 @@ debug:true;
 
 /* [wxMaxima: input   start ] */
 /*Information given by question authors*/
+factor_names:["Fertiliser","Variety"];
 factors_info:[
     [[0,"Fertiliser 1"],[5,"Fertiliser 2"],[7.5,"Fertiliser 3"]],
     [[0,"Variety 1"],[10,"Variety 2"]]
@@ -127,7 +128,7 @@ number_rows:product(length(factors_info[i]),i,1,length(factors_info))*replicatio
 
 /*Function to calculate the yield for a given data row*/
 /*Input: list of coordinates for each factor*/
-/*Output: list of labels and expected yield*/
+/*Output: expected yield for the given combination of factors without interactions*/
 effect_calculator(coords):=block(
     [
         factors_info:factors_info,
@@ -136,9 +137,11 @@ effect_calculator(coords):=block(
     ],
     effects_sum:sum(factors_info[counter_1][coords[counter_1]][1],counter_1,1,length(factors_info)),
     return(effects_sum)
-)$
+);
 
-/*New function comments*/
+/*Function to create the labels for a given data row*/
+/*Input: List of coordinates for each factor*/
+/*Output: list of labels for the given combination of factors without interactions*/
 create_label(coords):=block(
     [
         factors_info:factors_info,
@@ -148,11 +151,11 @@ create_label(coords):=block(
     ],
     label_maker:makelist(factors_info[i][coords[i]][2],i,1,number_factors),
     return(label_maker)
-)$
+);
 
-/* Function to map position of item in list to coordinates in data matrix */
+/* Function to map position of item in list to coordinates in data list */
 /* Input: position of item in list, number between 1 and number_rows */
-/* Output: relevant coordinates in factors_info matrix */
+/* Output: relevant coordinates in factors_info list */
 pos_to_coords(num):=block(
     [factors_info:factors_info, 
     number_factors:number_factors,
@@ -168,28 +171,31 @@ pos_to_coords(num):=block(
         number_factors-1
     )),
     return(makelist(mod(floor((num-1)/clock[i]),factor_lengths[i])+1, i, 1, number_factors))
-)$
+);
 
-/*Create the data set*/
-/*empty data set - all values are 0*/
+/*Create the data set (all 0s) and the corresponding coordinates list*/
 data_set:makelist(makelist(0,j,1,number_factors+2),i,1,number_rows);
 coord_list:makelist(0,i,1,number_rows);
 
-/*replce 0s with generated yields and corresponding labels using the function*/
+/*replce 0s with corresponding labels and generated yields (plus error term) using the relevant functions*/
 for i: 1 thru number_rows do (
     coords: pos_to_coords(ceiling(i/replications)),
     coord_list[i]: coords,
-    
     yield_value: float(base_yield + effect_calculator(coords) + quantile_normal(rand(1.0),error_mean,error_sd)),
     label_value: create_label(coords),
     rep_value: if mod(i,replications) = 0 then replications else mod(i,replications),
-    
     data_set[i]: append(label_value, [rep_value], [yield_value])
+);
 
-)$
+/*Add headers row to data set*/
+headers_row:makelist(0,i,1,number_factors+2);
+headers_row[number_factors+1]:"Replication";
+headers_row[number_factors+2]:"Yield";
+for i:1 thru number_factors do headers_row[i]:factor_names[i];
+data_set:append([headers_row],data_set);
 
+/*NOT FOR STACK: print data set*/
 data_set;
-coord_list;
 /* [wxMaxima: input   end   ] */
 
 
