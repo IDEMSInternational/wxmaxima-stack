@@ -21,11 +21,11 @@ Note, that plots *will not work* in this sandbox.
 /* [wxMaxima: input   start ] */
 /* No trailing slash. */
 /*Santiago details*/
-/*
+
 maximaplatform:"win"$
 stacklocation:"c:/tmp/stackroot"$
 stacktmplocation:"c:/tmp/stackroot"$
-*/
+
 
 /*Mary details*/
 /*
@@ -35,11 +35,11 @@ stacktmplocation:""$
 */
 
 /*Dan details*/
-
+/*
 maximaplatform:"win"$
 stacklocation:"c:/tmp/stackroot"$
 stacktmplocation:"c:/tmp/stackroot"$
-
+*/
 
 /* For MS platforms you normally need to explicitly set the path.
    Use the forward slash as a directory seperator.
@@ -180,7 +180,6 @@ for i: 1 thru number_rows do (
     data_set[i]: append(label_value, [rep_value], [yield_value])
 
 )$
-
 
 data_set;
 coord_list;
