@@ -20,9 +20,26 @@ Note, that plots *will not work* in this sandbox.
 
 /* [wxMaxima: input   start ] */
 /* No trailing slash. */
+/*Santiago details*/
+
 maximaplatform:"win"$
 stacklocation:"c:/tmp/stackroot"$
 stacktmplocation:"c:/tmp/stackroot"$
+
+
+/*Mary details*/
+/*
+maximaplatform:""$
+stacklocation:""$
+stacktmplocation:""$
+*/
+
+/*Dan details*/
+/*
+maximaplatform:""$
+stacklocation:""$
+stacktmplocation:""$
+*/
 
 /* For MS platforms you normally need to explicitly set the path.
    Use the forward slash as a directory seperator.
