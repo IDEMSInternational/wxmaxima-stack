@@ -131,6 +131,7 @@ effect_calculator(coords):=block(
     return(effects_sum)
 )$
 
+/*New function comments*/
 create_label(coords):=block(
     [
         factors_info:factors_info,
