@@ -163,6 +163,7 @@ for i: 1 thru number_rows do (
 
 )$
 
+
 data_set;
 coord_list;
 /* [wxMaxima: input   end   ] */
