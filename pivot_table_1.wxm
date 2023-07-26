@@ -41,6 +41,13 @@ stacklocation:"c:/tmp/stackroot"$
 stacktmplocation:"c:/tmp/stackroot"$
 */
 
+/*Wastalas details*/
+/*
+maximaplatform:""$
+stacklocation:""$
+stacktmplocation:""$
+*/
+
 /* For MS platforms you normally need to explicitly set the path.
    Use the forward slash as a directory seperator.
    You have cloned your code into c:/tmp/stackroot   
