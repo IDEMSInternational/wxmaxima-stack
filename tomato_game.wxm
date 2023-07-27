@@ -120,8 +120,8 @@ factors_info:[
     [[200,"Yes"],[-200,"No"]],
     [[100,"Partial"],[-100,"Complete"]]
 ];
-interactions_info:[[[0,200,0,0],["Fertiliser","Weeding"]],[[0,0,0,0],["Variety","Weeding"]]];
-
+interactions_info:[[[0,200,0,0],["Fertiliser","Weeding"]],[[0,0,0,0],["Variety","Weeding"]]]; /*[(1,1),(1,2),(2,1),(2,2)]*/
+year:1;
 base_yield:800;
 error_mean:0;
 error_sd:75;
@@ -186,14 +186,17 @@ pos_to_coords(num):=block(
 /*Gather answer list of treatments chosen from table of dropdowns - Hard-coded*/
 /*
 block_a_ans:[ans1,ans2,ans3,ans4,ans5,ans6];
-if ans13 = 1 then random_permutation(block_a_ans);
+if ans13 = 1 then block_a_ans:random_permutation(block_a_ans);
 block_b_ans:[ans7,ans8,ans9,ans10,ans11,ans12];
-if ans13 = 1 then random_permutation(block_b_ans);
+if ans13 = 1 then block_b_ans:random_permutation(block_b_ans);
 chosen_treatments:append(block_a_ans,block_b_ans);
 */
 
 /*Sample answer list for testing*/
 chosen_treatments:[1,1,7,3,1,1,2,2,2,3,4,8];
+
+/*Calculate yield of each option*/
+
 
 
 /*--------------------*/
@@ -209,7 +212,7 @@ coord_list:makelist(0,i,1,number_rows);
 for i: 1 thru number_rows do (
     coords: pos_to_coords(ceiling(i/replications)),
     coord_list[i]: coords,
-    yield_value: float(base_yield + effect_calculator(coords) + quantile_normal(rand(1.0),error_mean,error_sd)),
+    yield_value: float(base_yield + effect_calculator(coords) + error_sd*quantile_normal(rand(1.0),error_mean,1)),
     label_value: create_label(coords),
     data_set[i]: append(label_value, [yield_value])
 );
