@@ -21,11 +21,11 @@ Note, that plots *will not work* in this sandbox.
 /* [wxMaxima: input   start ] */
 /* No trailing slash. */
 /*Santiago, Emmaculate details*/
-
+/*
 maximaplatform:"win"$
 stacklocation:"c:/tmp/stackroot"$
 stacktmplocation:"c:/tmp/stackroot"$
-
+*/
 
 /*Mary details*/
 /*
@@ -35,11 +35,11 @@ stacktmplocation:""$
 */
 
 /*Dan details*/
-/*
+
 maximaplatform:"win"$
-stacklocation:"c:/tmp/stackroot"$
-stacktmplocation:"c:/tmp/stackroot"$
-*/
+stacklocation:"C:/Users/James/OneDrive/Documents/007_wxMaxima/STACK_sandbox"$
+stacklocation:"C:/Users/James/OneDrive/Documents/007_wxMaxima/STACK_sandbox"$
+
 
 /*Wastalas details*/
 /*
@@ -111,39 +111,115 @@ debug:true;
 
 
 /* [wxMaxima: input   start ] */
-/*Information given by question authors*/
-factor_names:["Year","Block","Variety","Fertiliser","Weeding"];
+/* INFORMATION FROM QUESTION AUTHORS */
+
+/* ["Year", "Block", "Optional factor 1", "Optional factor 2", ...] */
+factor_names:["Year", "Block", "Factor 1", "Factor 2", "Factor 3"];
+
+/* Element format: [
+    [F1-V1 effect, "Factor 1 - Variety 1"], 
+    [F1-V2 effect, "Factor 1 - Variety 2"], 
+    ...
+] */
 factors_info:[
-    [[0,"Year 1"],[200,"Year 2"]],
-    [[0,"Block A"],[100,"Block B"]],
-    [[10,"Compact"],[-10,"Long Head"]],
-    [[200,"Yes"],[-200,"No"]],
-    [[100,"Partial"],[-100,"Complete"]]
+    [
+        [10000, "Year 1"], 
+        [20000, "Year 2"]
+    ],
+    [
+        [1000, "Block A"], 
+        [2000, "Block B"]
+    ],
+    [
+        [100, "F1 - Variety 1"], 
+        [200, "F1 - Variety 2"]
+    ],
+    [
+        [10, "F2 - Variety 1"], 
+        [20, "F2 - Variety 2"]
+    ],
+    [
+        [1, "F3 - Variety 1"], 
+        [2, "F3 - Variety 2"], 
+        [3, "F3 - Variety 3"]
+    ]
 ];
-interactions_info:[[[0,200,0,0],["Fertiliser","Weeding"]],[[0,0,0,0],["Variety","Weeding"]]]; /*[(1,1),(1,2),(2,1),(2,2)]*/
-year:1;
-base_yield:800;
+
+/* Element format: [
+    "Factor 1 name (m varieties)", 
+    "Factor 2 name (n varieties)", 
+    Factor interaction matrix (n x m matrix)
+] */
+interactions_info:[
+    ["Factor 1", "Factor 2", [
+        [0.1,0.2],
+        [0.3,0.4]
+    ]],
+    ["Factor 1", "Factor 3", [
+        [0,0,0],
+        [0,0,0]
+    ]]
+];
+
+year_coord:1;
+block_coord:1;
+
+base_yield:0;
 error_mean:0;
-error_sd:75;
+error_sd:0;
 replications:1;
 
 
+/* DATA SET DIMENSIONS */
 
-/*Basic variables from inputs*/
 number_factors:length(factors_info);
 number_rows:product(length(factors_info[i]),i,1,length(factors_info))*replications;
 
-/*Function to calculate the yield for a given data row*/
+
+/* CONTRIBUTION TO POSITION FROM AUTHOR-SET FACTORS */
+
+no_blocks: length(factors_info[2]);
+block_contribution: no_pos_treatments*(block_coord-1);
+year_contribution: no_blocks*no_pos_treatments*(year_coord-1);
+
+
+/* FUNCTIONS */
+
+/*Function to calculate the expected yield for a given data row*/
 /*Input: list of coordinates for each factor*/
 /*Output: expected yield for the given combination of factors without interactions*/
 effect_calculator(coords):=block(
     [
         factors_info:factors_info,
+        interactions_info:interactions_info,
         counter_1,
-        effects_sum
+        effects_sum,
+        interaction_effect_sum,
+        interaction,
+        factor1_index,
+        factor2_index,
+        factor1_var_index,
+        factor2_var_index,
+        interaction_effect
     ],
-    effects_sum:sum(factors_info[counter_1][coords[counter_1]][1],counter_1,1,length(factors_info)),
-    return(effects_sum)
+    
+    single_effects_sum: sum(factors_info[counter_1][coords[counter_1]][1], counter_1, 1, length(factors_info)),
+    
+    interaction_effect_sum: 0,
+    for interaction in interactions_info do block(
+        
+        factor1_index: sublist_indices(factor_names, lambda([x], x=interaction[1]))[1],
+        factor2_index: sublist_indices(factor_names, lambda([x], x=interaction[2]))[1],
+        
+        factor1_var_index: coords[factor1_index],
+        factor2_var_index: coords[factor2_index],
+        
+        interaction_effect: interaction[3][factor1_var_index][factor2_var_index],
+        interaction_effect_sum: interaction_effect_sum + interaction_effect
+        
+    ),
+    
+    return(single_effects_sum + interaction_effect_sum)
 );
 
 /*Function to create the labels for a given data row*/
@@ -181,28 +257,63 @@ pos_to_coords(num):=block(
 );
 
 
-/*---------- This is for the feedback variables ----------*/
+/* STUDENT ANSWERS */
 
-/*Gather answer list of treatments chosen from table of dropdowns - Hard-coded*/
+/* Randomize order? */
+ans13: 1;
+
+/* Block A */
+ans1: 1;
+ans2: 1;
+ans3: 2;
+ans4: 3;
+ans5: 4;
+ans6: 5;
+
+/* Block B */
+ans7: 1;
+ans8: 2;
+ans9: 1;
+ans10: 5;
+ans11: 1;
+ans12: 1;
+
+
+/* FEEDBACK VARIABLES */
+
+/* Gather answer list of treatments chosen from table of dropdowns - Hard-coded */
+
+block_a_ans: [ans1,ans2,ans3,ans4,ans5,ans6];
+if ans13 = 1 then block_a_ans: random_permutation(block_a_ans);
+
+block_b_ans: [ans7,ans8,ans9,ans10,ans11,ans12];
+if ans13 = 1 then block_b_ans: random_permutation(block_b_ans);
+
+chosen_treatments: append(block_a_ans,block_b_ans);
+
+/* Set answer list for testing */
 /*
-block_a_ans:[ans1,ans2,ans3,ans4,ans5,ans6];
-if ans13 = 1 then block_a_ans:random_permutation(block_a_ans);
-block_b_ans:[ans7,ans8,ans9,ans10,ans11,ans12];
-if ans13 = 1 then block_b_ans:random_permutation(block_b_ans);
-chosen_treatments:append(block_a_ans,block_b_ans);
+no_pos_treatments: product(length(factors_info[i]),i,3,length(factors_info));
+chosen_treatments: makelist(i, i, 1, no_pos_treatments);
 */
-
-/*Sample answer list for testing*/
-chosen_treatments:[1,1,7,3,1,1,2,2,2,3,4,8];
 
 /*Calculate yield of each option*/
 
+data_set: makelist(0, i, 1, length(chosen_treatments));
+
+for i: 1 step 1 thru length(chosen_treatments) do block(
+    
+    treatment_coords: pos_to_coords(year_contribution + block_contribution + chosen_treatments[i]),   
+    data_set[i]: append(create_label(treatment_coords), [effect_calculator(treatment_coords)])
+
+);
+
+/* Add headers */
+data_set: append([append(factor_names, ["Yield"])], data_set);
 
 
-/*--------------------*/
+/* DATASET FOR ALL POSSIBLE COMBINATIONS - TESTING */
 
-
-/*---------- Code here calculates all the possible combinations and is not currenly needed ----------*/
 /*
 /*Create the data set (all 0s) and the corresponding coordinates list*/
 data_set:makelist(makelist(0,j,1,number_factors+2),i,1,number_rows);
@@ -218,16 +329,16 @@ for i: 1 thru number_rows do (
 );
 
 /*Add headers row to data set*/
-headers_row:makelist(0,i,1,number_factors+2);
+headers_row:makelist("",i,1,number_factors+2);
 headers_row[number_factors+1]:"Yield";
 for i:1 thru number_factors do headers_row[i]:factor_names[i];
 data_set:append([headers_row],data_set);
 */
+
 /*---------- ----------*/
 
-
 /*NOT FOR STACK: print data set*/
-data_set;
+/*data_set;*/
 
 /* [wxMaxima: input   end   ] */
 
