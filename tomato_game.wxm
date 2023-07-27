@@ -131,17 +131,17 @@ factors_info:[
         [2000, "Block B"]
     ],
     [
-        [100, "F1 - Variety 1"], 
-        [200, "F1 - Variety 2"]
+        [100, "Variety 1"], 
+        [200, "Variety 2"]
     ],
     [
-        [10, "F2 - Variety 1"], 
-        [20, "F2 - Variety 2"]
+        [10, "Variety 1"], 
+        [20, "Variety 2"]
     ],
     [
-        [1, "F3 - Variety 1"], 
-        [2, "F3 - Variety 2"], 
-        [3, "F3 - Variety 3"]
+        [1, "Variety 1"], 
+        [2, "Variety 2"], 
+        [3, "Variety 3"]
     ]
 ];
 
@@ -275,7 +275,12 @@ shuffle: [
 treatment_index_list: makelist(i, i, 1, number_treatments);
 treatment_ma_list: makelist(true, i, 1, number_treatments);
 treatment_name_list: makelist(
-    list_to_str(makelist(factors_info[j][pos_to_coords(i)[j]][2], j, 3, number_factors)), 
+    list_to_str(makelist(sconcat(
+                factor_names[j],
+                ": ",
+                factors_info[j][pos_to_coords(i)[j]][2]
+                )
+            , j, 3, number_factors)), 
     i, 1, number_treatments
 );
 
