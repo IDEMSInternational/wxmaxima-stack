@@ -181,7 +181,7 @@ coord_list:makelist(0,i,1,number_rows);
 for i: 1 thru number_rows do (
     coords: pos_to_coords(ceiling(i/replications)),
     coord_list[i]: coords,
-    yield_value: float(base_yield + effect_calculator(coords) + quantile_normal(rand(1.0),error_mean,error_sd)),
+    yield_value: float(base_yield + effect_calculator(coords) + error_sd*quantile_normal(rand(1.0),error_mean,1)),
     label_value: create_label(coords),
     rep_value: if mod(i,replications) = 0 then replications else mod(i,replications),
     data_set[i]: append(label_value, [rep_value], [yield_value])
