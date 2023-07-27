@@ -162,25 +162,22 @@ interactions_info:[
 ];
 
 year_coord:1;
-block_coord:1;
 
 base_yield:0;
 error_mean:0;
 error_sd:0;
-replications:1;
 
 
 /* DATA SET DIMENSIONS */
 
-number_factors:length(factors_info);
-number_rows:product(length(factors_info[i]),i,1,length(factors_info))*replications;
+number_factors: length(factors_info);
+number_treatments: product(length(factors_info[i]), i, 3, length(factors_info));
 
 
-/* CONTRIBUTION TO POSITION FROM AUTHOR-SET FACTORS */
+/* CONTRIBUTION TO POSITION FROM YEAR */
 
-no_blocks: length(factors_info[2]);
-block_contribution: no_pos_treatments*(block_coord-1);
-year_contribution: no_blocks*no_pos_treatments*(year_coord-1);
+number_blocks: length(factors_info[2]);
+year_contribution: number_blocks*number_treatments*(year_coord-1);
 
 
 /* FUNCTIONS */
@@ -236,7 +233,7 @@ create_label(coords):=block(
     return(label_maker)
 );
 
-/* Function to map position of item in list to coordinates in data list */
+/* Function to map position of item in list to coordinates in nested data list */
 /* Input: position of item in list, number between 1 and number_rows */
 /* Output: relevant coordinates in factors_info list */
 pos_to_coords(num):=block(
@@ -256,11 +253,41 @@ pos_to_coords(num):=block(
     return(makelist(mod(floor((num-1)/clock[i]),factor_lengths[i])+1, i, 1, number_factors))
 );
 
+/* Function to convert a list of strings into a single string listing each entry */
+/* Input: List of string values */
+/* Output: Single string */
+list_to_str(list):=block(
+    sentence:pop(list),
+    for word in list do (
+        sentence: sconcat(sentence, ", ", word)
+    ),
+    return(sentence)
+);
+
+
+/* QUESTION VARIABLES */
+
+shuffle: [
+    [1, true, "Yes"],
+    [2, false, "No"]
+];
+
+treatment_index_list: makelist(i, i, 1, number_treatments);
+treatment_ma_list: makelist(true, i, 1, number_treatments);
+treatment_name_list: makelist(
+    list_to_str(makelist(factors_info[j][pos_to_coords(i)[j]][2], j, 3, number_factors)), 
+    i, 1, number_treatments
+);
+
+treatments: makelist(
+    [treatment_index_list[i], treatment_ma_list[i], treatment_name_list[i]], 
+    i, 1, number_treatments
+);
 
 /* STUDENT ANSWERS */
 
 /* Randomize order? */
-ans13: 1;
+ans13: 0;
 
 /* Block A */
 ans1: 1;
@@ -289,12 +316,17 @@ if ans13 = 1 then block_a_ans: random_permutation(block_a_ans);
 block_b_ans: [ans7,ans8,ans9,ans10,ans11,ans12];
 if ans13 = 1 then block_b_ans: random_permutation(block_b_ans);
 
-chosen_treatments: append(block_a_ans,block_b_ans);
+/* List the chosen treatements with the added contribution to the position from the block */
+chosen_treatments: append(
+    block_a_ans,
+    block_b_ans + number_treatments*[1,1,1,1,1,1]
+);
 
-/* Set answer list for testing */
+/* Answer list with all factor and block combinations for testing */
 /*
-no_pos_treatments: product(length(factors_info[i]),i,3,length(factors_info));
-chosen_treatments: makelist(i, i, 1, no_pos_treatments);
+chosen_treatments: append(
+    makelist(i, i, 1, number_blocks*number_treatments)
+)
 */
 
 /*Calculate yield of each option*/
@@ -303,7 +335,7 @@ data_set: makelist(0, i, 1, length(chosen_treatments));
 
 for i: 1 step 1 thru length(chosen_treatments) do block(
     
-    treatment_coords: pos_to_coords(year_contribution + block_contribution + chosen_treatments[i]),   
+    treatment_coords: pos_to_coords(year_contribution + chosen_treatments[i]),   
     data_set[i]: append(create_label(treatment_coords), [effect_calculator(treatment_coords)])
 
 );
