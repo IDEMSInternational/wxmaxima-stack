@@ -20,7 +20,7 @@ Note, that plots *will not work* in this sandbox.
 
 /* [wxMaxima: input   start ] */
 /* No trailing slash. */
-/*Santiago details*/
+/*Santiago, Emmaculate details*/
 
 maximaplatform:"win"$
 stacklocation:"c:/tmp/stackroot"$
