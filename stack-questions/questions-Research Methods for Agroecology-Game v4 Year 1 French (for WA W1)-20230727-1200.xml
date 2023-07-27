@@ -1,0 +1,704 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<quiz>
+<!-- question: 113021  -->
+  <question type="stack">
+    <name>
+      <text>Game v4 Year 1 French (for WA W1)</text>
+    </name>
+    <questiontext format="moodle_auto_format">
+      <text><![CDATA[<p>Dans chaque bloc ci-dessous, choisissez six traitements que vous souhaitez inclure dans ce bloc et si vous souhaitez randomiser vos choix dans chaque bloc. Si vous utilisez un téléphone, vous devrez peut-être faire glisser votre doigt vers la droite pour voir le deuxième bloc.</p>
+
+<p>Lorsque vous avez terminé de concevoir votre expérience, cliquez sur le bouton Vérifier. Vous recevrez ensuite des commentaires et la possibilité de exporter vos données.</p>
+
+<br>
+
+<p>Souhaitez-vous randomiser vos choix de traitement dans chaque bloc? [[input:ans13]] [[validation:ans13]]</p> 
+
+<br>
+
+<p>
+<table border="1">
+  <tr align="center">
+    <th width="300px">{@factor_list[2][4][1]@}</th>
+    <th width="300px">{@factor_list[2][4][2]@}</th>
+  </tr>
+  <tr>
+    <th>[[input:ans1]]</th>
+    <th>[[input:ans7]]</th>
+  </tr>
+  <tr>
+    <th>[[input:ans2]]</th>
+    <th>[[input:ans8]]</th>
+  </tr>
+  <tr>
+    <th>[[input:ans3]]</th>
+    <th>[[input:ans9]]</th>
+  </tr>
+  <tr>
+    <th>[[input:ans4]]</th>
+    <th>[[input:ans10]]</th>
+  </tr>
+  <tr>
+    <th>[[input:ans5]]</th>
+    <th>[[input:ans11]]</th>
+  </tr>
+  <tr>
+    <th>[[input:ans6]]</th>
+    <th>[[input:ans12]]</th>
+  </tr>
+</table>
+</p>
+
+<p>[[validation:ans1]] [[validation:ans2]] [[validation:ans3]] [[validation:ans4]] [[validation:ans5]] [[validation:ans6]] [[validation:ans7]] [[validation:ans8]] [[validation:ans9]] [[validation:ans10]] [[validation:ans11]] [[validation:ans12]]</p>]]></text>
+    </questiontext>
+    <generalfeedback format="moodle_auto_format">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0.1</penalty>
+    <hidden>0</hidden>
+    <idnumber></idnumber>
+    <stackversion>
+      <text>2023060500</text>
+    </stackversion>
+    <questionvariables>
+      <text><![CDATA[/*-----------------------------------------------------------------------------*/
+year:1;
+/*-----------------------------------------------------------------------------*/
+
+
+/*-----------------------------------------------------------------------------*/
+/*Number of plots*/
+number_of_blocks:2;
+number_of_plots_per_block:6;
+number_of_plots:number_of_blocks*number_of_plots_per_block;
+/*-----------------------------------------------------------------------------*/
+
+
+/*-----------------------------------------------------------------------------*/
+/*Initial Data for Game*/
+/*Defining initial parameters*/
+overall_mean:800;
+sigma:75;
+
+/*Factors and Effects*/
+/*elements of this list have modifiers: [Factor, Option or Context, Level, Label, Effect]*/
+factor_list:[["Annee","context",[1,2],["1","2"],[0,200]],["Bloc","context",[1,2],["Bloc A","Bloc B"],[0,100]],["Variete","option",[1,2],["Tete Courte et Compacte","Tete Longue"],[10,-10]],["Engrais","option",[1,2],["Oui","Non"],[200,-200]],["Desherbage","option",[1,2],["Partiel","Complet"],[100,-100]]];
+/*Interactions*/
+interaction_list:[[["Engrais","Desherbage"],[0,200,0,0]]];
+/*Everything but option and context-----------------------------------------------------------------------------*/
+Year, Block, Variety, Short Compact Head, Long Head, Fertilizer, Yes, No, Weeding, Partial
+
+
+/*-----------------------------------------------------------------------------*/
+/*Number of factors*/
+number_factors:length(factor_list);
+/*-----------------------------------------------------------------------------*/
+
+
+/*-----------------------------------------------------------------------------*/
+/*Order factor_list into contexts followed by options*/
+/*Separating option and context factors*/
+option_factor_list:[];
+context_factor_list:[];
+for i:1 thru number_factors do (if factor_list[i][2]="option" then option_factor_list:append(option_factor_list,[factor_list[i]]) else context_factor_list:append(context_factor_list,[factor_list[i]]));
+option_factor_number:length(option_factor_list);
+context_factor_number:length(context_factor_list);
+option_list:makelist(0,i,1,option_factor_number);
+for i:1 thru option_factor_number do (option_list[i]:option_factor_list[i][1]);
+/*Create a temporary factor_list and reorder factors*/
+factor_list_temp:[]
+for i:1 thru number_factors do (if factor_list[i][2]="context" then factor_list_temp:append(factor_list_temp,[factor_list[i]]));
+for i:1 thru number_factors do (if factor_list[i][2]="option" then factor_list_temp:append(factor_list_temp,[factor_list[i]]));
+factor_list:factor_list_temp;
+/*-----------------------------------------------------------------------------*/
+
+
+/*-----------------------------------------------------------------------------*/
+/*Processing interactions to get full information of interactions*/
+number_interactions:length(interaction_list);
+/*list of labels in the order of the interactions*/
+interaction_labels:if number_interactions>0 then makelist(0,i,1,number_interactions) else [];
+if number_interactions>0 then (for i:1 thru number_interactions do (interaction_labels[i]:[for j:1 thru number_factors do (if interaction_list[i][1][1]=factor_list[j][1] then return(factor_list[j][4])),for j:1 thru number_factors do (if interaction_list[i][1][2]=factor_list[j][1] then return(factor_list[j][4]))]));
+interaction_labels;
+interaction_labels_2:if number_interactions>0 then makelist(0,i,1,number_interactions) else [];
+if number_interactions>0 then (for i:1 thru number_interactions do (interaction_labels_2[i]:makelist([interaction_labels[i][1][floor((j-1)/length(interaction_labels[i][2]))+1],interaction_labels[i][2][mod(j-1,length(interaction_labels[i][2]))+1]],j,1,length(interaction_list[i][2]))));
+/*-----------------------------------------------------------------------------*/
+
+
+/*-----------------------------------------------------------------------------*/
+/*Generating a list of combinations of factors and effects*/
+/*Number of effects for each factor*/
+number_effects_list:makelist(length(factor_list[i][5]),i,1,number_factors);
+/*Number of combinations for factors*/
+number_combinations:product(number_effects_list[i],i,1,number_factors);
+/*list of combinations of factors*/
+combinations_list:makelist(makelist([factor_list[number_factors-j+1][1],[factor_list[number_factors-j+1][4][if j=1 then mod(i-1,product(number_effects_list[k],k,number_factors-j+1,number_factors))+1 else floor(mod(i-1,product(number_effects_list[k],k,number_factors-j+1,number_factors))/product(number_effects_list[k],k,number_factors-j+2,number_factors))+1]],[factor_list[number_factors-j+1][5][if j=1 then mod(i-1,product(number_effects_list[k],k,number_factors-j+1,number_factors))+1 else floor(mod(i-1,product(number_effects_list[k],k,number_factors-j+1,number_factors))/product(number_effects_list[k],k,number_factors-j+2,number_factors))+1]]],j,number_factors,1,-1),i,1,number_combinations);
+/*-----------------------------------------------------------------------------*/
+
+
+/*-----------------------------------------------------------------------------*/
+/*Combinations with interactions*/
+/*Add interaction elements without the modifiers*/
+if number_interactions>0 then (for i:1 thru number_combinations do (for j:1 thru number_interactions do (combinations_list[i]:append(combinations_list[i],[[interaction_list[j][1],[combinations_list[i][for k:1 thru number_factors do (if interaction_list[j][1][1]=combinations_list[i][k][1] then return(k))][2][1],combinations_list[i][for k:1 thru number_factors do (if interaction_list[j][1][2]=combinations_list[i][k][1] then return(k))][2][1]],[0]]]))));
+/*Add modifiers to the interactions*/
+number_factors_interactions:length(combinations_list[1]);
+if number_interactions>0 then (for i:1 thru number_combinations do (for j:number_factors+1 thru number_factors_interactions do (combinations_list[i][j][3]:[interaction_list[j-number_factors][2][for k:1 thru length(interaction_list[j-number_factors][2]) do (if interaction_labels_2[j-number_factors][k]=combinations_list[i][j][2] then return(k))]])));
+/*-----------------------------------------------------------------------------*/
+
+
+/*-----------------------------------------------------------------------------*/
+/*Calculate the total modifier for each combination*/
+combinations_modifiers:makelist(sum(combinations_list[i][j][3][1],j,1,number_factors+number_interactions),i,1,number_combinations);
+for i:1 thru length(combinations_modifiers) do combinations_modifiers[i]:float(combinations_modifiers[i]);
+/*-----------------------------------------------------------------------------*/
+
+
+/*-----------------------------------------------------------------------------*/
+/*Treatments for dropdown menu */
+/*create list of treatments with the corresponding labels*/
+number_treatment:product(length(option_factor_list[i][3]),i,1,option_factor_number);
+treatment_list:makelist(0,i,1,number_treatment);
+for i:1 thru number_treatment do (treatment_list[i]:makelist(combinations_list[i][for k:1 thru number_factors do (if combinations_list[i][k][1]=option_list[j] then return(k))],j,1,option_factor_number));
+/*generate list of options for dropdown menu*/
+treatments_2:makelist(0,i,1,number_treatment);
+for i:1 thru number_treatment do (treatments_2[i]:makelist(sconcat(treatment_list[i][j][1]," ",treatment_list[i][j][2][1],if j=option_factor_number then "" else ", "),j,1,option_factor_number));
+treatments_3:makelist("",i,1,number_treatment);
+for i:1 thru number_treatment do (for j:1 thru option_factor_number do (treatments_3[i]:sconcat(treatments_3[i],treatments_2[i][j])));
+treatments:makelist([i,true,sconcat("T",i,": ",treatments_3[i])],i,1,number_treatment);
+/*-----------------------------------------------------------------------------*/
+
+
+/*-----------------------------------------------------------------------------*/
+/*Randomising Errors*/
+error_list:makelist(float(sigma*quantile_normal(rand(1.0),0,1)),i,1,2*number_of_plots);
+/*-----------------------------------------------------------------------------*/
+
+
+/*-----------------------------------------------------------------------------*/
+/*Shuffling Options*/
+shuffle:[[1,true,"Randomiser"],[2,true,"Dans l'ordre donnee"]];
+/*-----------------------------------------------------------------------------*/]]></text>
+    </questionvariables>
+    <specificfeedback format="html">
+      <text>[[feedback:prt1]]</text>
+    </specificfeedback>
+    <questionnote>
+      <text>1</text>
+    </questionnote>
+    <questiondescription format="moodle_auto_format">
+      <text></text>
+    </questiondescription>
+    <questionsimplify>1</questionsimplify>
+    <assumepositive>0</assumepositive>
+    <assumereal>0</assumereal>
+    <prtcorrect format="html">
+      <text></text>
+    </prtcorrect>
+    <prtpartiallycorrect format="html">
+      <text></text>
+    </prtpartiallycorrect>
+    <prtincorrect format="html">
+      <text></text>
+    </prtincorrect>
+    <multiplicationsign>dot</multiplicationsign>
+    <sqrtsign>1</sqrtsign>
+    <complexno>i</complexno>
+    <inversetrig>cos-1</inversetrig>
+    <logicsymbol>lang</logicsymbol>
+    <matrixparens>[</matrixparens>
+    <variantsselectionseed></variantsselectionseed>
+    <input>
+      <name>ans1</name>
+      <type>dropdown</type>
+      <tans>treatments</tans>
+      <boxsize>15</boxsize>
+      <strictsyntax>1</strictsyntax>
+      <insertstars>0</insertstars>
+      <syntaxhint></syntaxhint>
+      <syntaxattribute>0</syntaxattribute>
+      <forbidwords></forbidwords>
+      <allowwords></allowwords>
+      <forbidfloat>1</forbidfloat>
+      <requirelowestterms>0</requirelowestterms>
+      <checkanswertype>0</checkanswertype>
+      <mustverify>0</mustverify>
+      <showvalidation>0</showvalidation>
+      <options></options>
+    </input>
+    <input>
+      <name>ans10</name>
+      <type>dropdown</type>
+      <tans>treatments</tans>
+      <boxsize>15</boxsize>
+      <strictsyntax>1</strictsyntax>
+      <insertstars>0</insertstars>
+      <syntaxhint></syntaxhint>
+      <syntaxattribute>0</syntaxattribute>
+      <forbidwords></forbidwords>
+      <allowwords></allowwords>
+      <forbidfloat>1</forbidfloat>
+      <requirelowestterms>0</requirelowestterms>
+      <checkanswertype>0</checkanswertype>
+      <mustverify>0</mustverify>
+      <showvalidation>0</showvalidation>
+      <options></options>
+    </input>
+    <input>
+      <name>ans11</name>
+      <type>dropdown</type>
+      <tans>treatments</tans>
+      <boxsize>15</boxsize>
+      <strictsyntax>1</strictsyntax>
+      <insertstars>0</insertstars>
+      <syntaxhint></syntaxhint>
+      <syntaxattribute>0</syntaxattribute>
+      <forbidwords></forbidwords>
+      <allowwords></allowwords>
+      <forbidfloat>1</forbidfloat>
+      <requirelowestterms>0</requirelowestterms>
+      <checkanswertype>0</checkanswertype>
+      <mustverify>0</mustverify>
+      <showvalidation>0</showvalidation>
+      <options></options>
+    </input>
+    <input>
+      <name>ans12</name>
+      <type>dropdown</type>
+      <tans>treatments</tans>
+      <boxsize>15</boxsize>
+      <strictsyntax>1</strictsyntax>
+      <insertstars>0</insertstars>
+      <syntaxhint></syntaxhint>
+      <syntaxattribute>0</syntaxattribute>
+      <forbidwords></forbidwords>
+      <allowwords></allowwords>
+      <forbidfloat>1</forbidfloat>
+      <requirelowestterms>0</requirelowestterms>
+      <checkanswertype>0</checkanswertype>
+      <mustverify>0</mustverify>
+      <showvalidation>0</showvalidation>
+      <options></options>
+    </input>
+    <input>
+      <name>ans13</name>
+      <type>dropdown</type>
+      <tans>shuffle</tans>
+      <boxsize>15</boxsize>
+      <strictsyntax>1</strictsyntax>
+      <insertstars>0</insertstars>
+      <syntaxhint></syntaxhint>
+      <syntaxattribute>0</syntaxattribute>
+      <forbidwords></forbidwords>
+      <allowwords></allowwords>
+      <forbidfloat>1</forbidfloat>
+      <requirelowestterms>0</requirelowestterms>
+      <checkanswertype>0</checkanswertype>
+      <mustverify>0</mustverify>
+      <showvalidation>0</showvalidation>
+      <options></options>
+    </input>
+    <input>
+      <name>ans2</name>
+      <type>dropdown</type>
+      <tans>treatments</tans>
+      <boxsize>15</boxsize>
+      <strictsyntax>1</strictsyntax>
+      <insertstars>0</insertstars>
+      <syntaxhint></syntaxhint>
+      <syntaxattribute>0</syntaxattribute>
+      <forbidwords></forbidwords>
+      <allowwords></allowwords>
+      <forbidfloat>1</forbidfloat>
+      <requirelowestterms>0</requirelowestterms>
+      <checkanswertype>0</checkanswertype>
+      <mustverify>0</mustverify>
+      <showvalidation>0</showvalidation>
+      <options></options>
+    </input>
+    <input>
+      <name>ans3</name>
+      <type>dropdown</type>
+      <tans>treatments</tans>
+      <boxsize>15</boxsize>
+      <strictsyntax>1</strictsyntax>
+      <insertstars>0</insertstars>
+      <syntaxhint></syntaxhint>
+      <syntaxattribute>0</syntaxattribute>
+      <forbidwords></forbidwords>
+      <allowwords></allowwords>
+      <forbidfloat>1</forbidfloat>
+      <requirelowestterms>0</requirelowestterms>
+      <checkanswertype>0</checkanswertype>
+      <mustverify>0</mustverify>
+      <showvalidation>0</showvalidation>
+      <options></options>
+    </input>
+    <input>
+      <name>ans4</name>
+      <type>dropdown</type>
+      <tans>treatments</tans>
+      <boxsize>15</boxsize>
+      <strictsyntax>1</strictsyntax>
+      <insertstars>0</insertstars>
+      <syntaxhint></syntaxhint>
+      <syntaxattribute>0</syntaxattribute>
+      <forbidwords></forbidwords>
+      <allowwords></allowwords>
+      <forbidfloat>1</forbidfloat>
+      <requirelowestterms>0</requirelowestterms>
+      <checkanswertype>0</checkanswertype>
+      <mustverify>0</mustverify>
+      <showvalidation>0</showvalidation>
+      <options></options>
+    </input>
+    <input>
+      <name>ans5</name>
+      <type>dropdown</type>
+      <tans>treatments</tans>
+      <boxsize>15</boxsize>
+      <strictsyntax>1</strictsyntax>
+      <insertstars>0</insertstars>
+      <syntaxhint></syntaxhint>
+      <syntaxattribute>0</syntaxattribute>
+      <forbidwords></forbidwords>
+      <allowwords></allowwords>
+      <forbidfloat>1</forbidfloat>
+      <requirelowestterms>0</requirelowestterms>
+      <checkanswertype>0</checkanswertype>
+      <mustverify>0</mustverify>
+      <showvalidation>0</showvalidation>
+      <options></options>
+    </input>
+    <input>
+      <name>ans6</name>
+      <type>dropdown</type>
+      <tans>treatments</tans>
+      <boxsize>15</boxsize>
+      <strictsyntax>1</strictsyntax>
+      <insertstars>0</insertstars>
+      <syntaxhint></syntaxhint>
+      <syntaxattribute>0</syntaxattribute>
+      <forbidwords></forbidwords>
+      <allowwords></allowwords>
+      <forbidfloat>1</forbidfloat>
+      <requirelowestterms>0</requirelowestterms>
+      <checkanswertype>0</checkanswertype>
+      <mustverify>0</mustverify>
+      <showvalidation>0</showvalidation>
+      <options></options>
+    </input>
+    <input>
+      <name>ans7</name>
+      <type>dropdown</type>
+      <tans>treatments</tans>
+      <boxsize>15</boxsize>
+      <strictsyntax>1</strictsyntax>
+      <insertstars>0</insertstars>
+      <syntaxhint></syntaxhint>
+      <syntaxattribute>0</syntaxattribute>
+      <forbidwords></forbidwords>
+      <allowwords></allowwords>
+      <forbidfloat>1</forbidfloat>
+      <requirelowestterms>0</requirelowestterms>
+      <checkanswertype>0</checkanswertype>
+      <mustverify>0</mustverify>
+      <showvalidation>0</showvalidation>
+      <options></options>
+    </input>
+    <input>
+      <name>ans8</name>
+      <type>dropdown</type>
+      <tans>treatments</tans>
+      <boxsize>15</boxsize>
+      <strictsyntax>1</strictsyntax>
+      <insertstars>0</insertstars>
+      <syntaxhint></syntaxhint>
+      <syntaxattribute>0</syntaxattribute>
+      <forbidwords></forbidwords>
+      <allowwords></allowwords>
+      <forbidfloat>1</forbidfloat>
+      <requirelowestterms>0</requirelowestterms>
+      <checkanswertype>0</checkanswertype>
+      <mustverify>0</mustverify>
+      <showvalidation>0</showvalidation>
+      <options></options>
+    </input>
+    <input>
+      <name>ans9</name>
+      <type>dropdown</type>
+      <tans>treatments</tans>
+      <boxsize>15</boxsize>
+      <strictsyntax>1</strictsyntax>
+      <insertstars>0</insertstars>
+      <syntaxhint></syntaxhint>
+      <syntaxattribute>0</syntaxattribute>
+      <forbidwords></forbidwords>
+      <allowwords></allowwords>
+      <forbidfloat>1</forbidfloat>
+      <requirelowestterms>0</requirelowestterms>
+      <checkanswertype>0</checkanswertype>
+      <mustverify>0</mustverify>
+      <showvalidation>0</showvalidation>
+      <options></options>
+    </input>
+    <prt>
+      <name>prt1</name>
+      <value>1.0000000</value>
+      <autosimplify>1</autosimplify>
+      <feedbackstyle>1</feedbackstyle>
+      <feedbackvariables>
+        <text><![CDATA[/*-----------------------------------------------------------------------------*/
+/*Finding yields*/
+/*list of chosen treatments - HARD CODED LISTS OF 6 ANSWERS*/
+block_a_ans:if ans13=1 then random_permutation([ans1,ans2,ans3,ans4,ans5,ans6]) else [ans1,ans2,ans3,ans4,ans5,ans6];
+block_b_ans:if ans13=1 then random_permutation([ans7,ans8,ans9,ans10,ans11,ans12]) else [ans7,ans8,ans9,ans10,ans11,ans12];
+chosen_treatments_list:append(block_a_ans,block_b_ans+product(length(option_factor_list[i][3]),i,1,option_factor_number)); /*HARD CODING: Here I'm only adding the element that refers to block 1 or block 2*/
+/*-----------------------------------------------------------------------------*/
+
+
+/*-----------------------------------------------------------------------------*/
+/*Calculating the yields*/
+/*This version considers year 1 only!!!*/
+yield_list:makelist(overall_mean+combinations_modifiers[chosen_treatments_list[i]]+error_list[i],i,1,12); /*HARD CODED 12*/
+for i:1 thru length(yield_list) do (if yield_list[i]<0 then yield_list[i]:0);
+for i:1 thru length(yield_list) do yield_list[i]:float(round(yield_list[i]/10)*10);
+/*-----------------------------------------------------------------------------*/
+
+
+/*-----------------------------------------------------------------------------*/
+/*Chosen Treatments Details - create the columns with information.*/
+details_list:makelist([mod(i-1,number_of_plots_per_block)+1],i,1,length(yield_list));
+for i:1 thru length(yield_list) do (for j:1 thru number_factors do (details_list[i]:append(details_list[i],[combinations_list[chosen_treatments_list[i]][j][2][1]])));
+for i:1 thru length(yield_list) do (details_list[i]:append(details_list[i],[yield_list[i]]));
+first_row:["Parcelle"];
+for i:1 thru number_factors do (first_row:append(first_row,[factor_list[i][1]]));
+first_row:append(first_row,["Rendement (kg/h)"]);
+details_list:append([first_row],details_list);
+/*-----------------------------------------------------------------------------*/
+
+
+/*-----------------------------------------------------------------------------*/
+/*Node 1: Script to export data, always true*/
+/*-----------------------------------------------------------------------------*/
+
+
+/*-----------------------------------------------------------------------------*/
+/*Node 2: Overall Feedback, always true*/
+/*-----------------------------------------------------------------------------*/
+
+
+/*-----------------------------------------------------------------------------*/
+/*Node 3: Blocking*/
+blocking:if setify(block_a_ans)=setify(block_b_ans) then 1 else 0;
+/*-----------------------------------------------------------------------------*/
+
+
+/*-----------------------------------------------------------------------------*/
+/*Node 4: Full Factorial*/
+full_factorial:if cardinality(setify(append(block_a_ans,block_b_ans)))=number_treatment then 1 else 0;
+/*-----------------------------------------------------------------------------*/
+
+
+/*-----------------------------------------------------------------------------*/
+/*Node 6: Internal Variability - HARD CODED 6*/
+internal_variability:if (cardinality(setify(block_a_ans))<6 or cardinality(setify(block_b_ans))<6) then 1 else 0;
+/*-----------------------------------------------------------------------------*/
+
+
+/*-----------------------------------------------------------------------------*/
+/*Node 5: Interaction*/
+interaction:0;
+for i:1 thru 6 do (if (block_a_ans[i]=1 or block_a_ans[i]=2 or block_a_ans[i]=3 or block_a_ans[i]=4) then (if cardinality(intersect({1,2,3,4},setify(block_a_ans)))=4 then interaction:1), if (block_a_ans[i]=5 or block_a_ans[i]=6 or block_a_ans[i]=7 or block_a_ans[i]=8) then (if cardinality(intersect({5,6,7,8},setify(block_a_ans)))=4 then interaction:1), if (block_a_ans[i]=1 or block_a_ans[i]=2 or block_a_ans[i]=5 or block_a_ans[i]=6) then (if cardinality(intersect({1,2,5,6},setify(block_a_ans)))=4 then interaction:1), if (block_a_ans[i]=3 or block_a_ans[i]=4 or block_a_ans[i]=7 or block_a_ans[i]=8) then (if cardinality(intersect({3,4,7,8},setify(block_a_ans)))=4 then interaction:1), if (block_a_ans[i]=1 or block_a_ans[i]=3 or block_a_ans[i]=5 or block_a_ans[i]=7) then (if cardinality(intersect({1,3,5,7},setify(block_a_ans)))=4 then interaction:1), if (block_a_ans[i]=2 or block_a_ans[i]=4 or block_a_ans[i]=6 or block_a_ans[i]=8) then (if cardinality(intersect({2,4,6,8},setify(block_a_ans)))=4 then interaction:1));
+for i:1 thru 6 do (if (block_b_ans[i]=1 or block_b_ans[i]=2 or block_b_ans[i]=3 or block_b_ans[i]=4) then (if cardinality(intersect({1,2,3,4},setify(block_b_ans)))=4 then interaction:1), if (block_b_ans[i]=5 or block_b_ans[i]=6 or block_b_ans[i]=7 or block_b_ans[i]=8) then (if cardinality(intersect({5,6,7,8},setify(block_b_ans)))=4 then interaction:1), if (block_b_ans[i]=1 or block_b_ans[i]=2 or block_b_ans[i]=5 or block_b_ans[i]=6) then (if cardinality(intersect({1,2,5,6},setify(block_b_ans)))=4 then interaction:1), if (block_b_ans[i]=3 or block_b_ans[i]=4 or block_b_ans[i]=7 or block_b_ans[i]=8) then (if cardinality(intersect({3,4,7,8},setify(block_b_ans)))=4 then interaction:1), if (block_b_ans[i]=1 or block_b_ans[i]=3 or block_b_ans[i]=5 or block_b_ans[i]=7) then (if cardinality(intersect({1,3,5,7},setify(block_b_ans)))=4 then interaction:1), if (block_b_ans[i]=2 or block_b_ans[i]=4 or block_b_ans[i]=6 or block_b_ans[i]=8) then (if cardinality(intersect({2,4,6,8},setify(block_b_ans)))=4 then interaction:1));
+/*-----------------------------------------------------------------------------*/]]></text>
+      </feedbackvariables>
+      <node>
+        <name>0</name>
+        <description></description>
+        <answertest>AlgEquiv</answertest>
+        <sans>1</sans>
+        <tans>1</tans>
+        <testoptions></testoptions>
+        <quiet>0</quiet>
+        <truescoremode>=</truescoremode>
+        <truescore>1</truescore>
+        <truepenalty></truepenalty>
+        <truenextnode>1</truenextnode>
+        <trueanswernote>prt1-1-T</trueanswernote>
+        <truefeedback format="html">
+          <text><![CDATA[<p>Cliquez sur l'export vers CSV ci-dessous pour obtenir un fichier csv avec les détails des traitements et les rendements.</p> 
+<button onclick="exportToCsv()">Exporter vers CSV </button>
+<script>
+var Results= {#details_list#};
+
+exportToCsv = function() {
+  var CsvString = "";
+  Results.forEach(function(RowItem, RowIndex) {
+    RowItem.forEach(function(ColItem, ColIndex) {
+      CsvString += ColItem + ',';
+    });
+    CsvString += "\r\n";
+  });
+  CsvString = "data:application/csv," + encodeURIComponent(CsvString);
+ var x = document.createElement("A");
+ x.setAttribute("href", CsvString );
+ x.setAttribute("download","details_list.csv");
+ document.body.appendChild(x);
+ x.click();
+}
+</script>]]></text>
+        </truefeedback>
+        <falsescoremode>=</falsescoremode>
+        <falsescore>0</falsescore>
+        <falsepenalty></falsepenalty>
+        <falsenextnode>1</falsenextnode>
+        <falseanswernote>prt1-1-F</falseanswernote>
+        <falsefeedback format="html">
+          <text></text>
+        </falsefeedback>
+      </node>
+      <node>
+        <name>1</name>
+        <description></description>
+        <answertest>AlgEquiv</answertest>
+        <sans>1</sans>
+        <tans>1</tans>
+        <testoptions></testoptions>
+        <quiet>0</quiet>
+        <truescoremode>+</truescoremode>
+        <truescore>0</truescore>
+        <truepenalty></truepenalty>
+        <truenextnode>2</truenextnode>
+        <trueanswernote>prt1-2-T</trueanswernote>
+        <truefeedback format="html">
+          <text><![CDATA[<br>
+<br>
+<p>Il n'y a pas de bonnes ou de mauvaises réponses à cette question. Votre choix de conception privilégie certains principes par rapport à d'autres. L'analyse que vous pouvez faire et la précision de vos résultats dépendront de la conception que vous avez choisie.</p>]]></text>
+        </truefeedback>
+        <falsescoremode>-</falsescoremode>
+        <falsescore>0</falsescore>
+        <falsepenalty></falsepenalty>
+        <falsenextnode>2</falsenextnode>
+        <falseanswernote>prt1-2-F</falseanswernote>
+        <falsefeedback format="html">
+          <text></text>
+        </falsefeedback>
+      </node>
+      <node>
+        <name>2</name>
+        <description></description>
+        <answertest>AlgEquiv</answertest>
+        <sans>blocking</sans>
+        <tans>1</tans>
+        <testoptions></testoptions>
+        <quiet>0</quiet>
+        <truescoremode>+</truescoremode>
+        <truescore>0</truescore>
+        <truepenalty></truepenalty>
+        <truenextnode>3</truenextnode>
+        <trueanswernote>prt1-3-T</trueanswernote>
+        <truefeedback format="html">
+          <text><![CDATA[<br>
+<p>Votre conception donne la priorité au Blocking en tant que principe de conception car les deux blocs contiennent les mêmes traitements. Cela signifie que, dans chaque comparaison, il y a au moins deux répétitions. Cela augmente la fiabilité de vos résultats.</p>]]></text>
+        </truefeedback>
+        <falsescoremode>-</falsescoremode>
+        <falsescore>0</falsescore>
+        <falsepenalty></falsepenalty>
+        <falsenextnode>3</falsenextnode>
+        <falseanswernote>prt1-3-F</falseanswernote>
+        <falsefeedback format="html">
+          <text><![CDATA[<br>
+<p>Votre conception compromet le Blocking en tant qu’un principe de conception parce que vos deux blocs n'ont pas les mêmes traitements. Les différences entre les blocs peuvent donc devenir des effets confondants lorsque vous comparez les traitements. Votre analyse devra peut-être en tenir compte.</p>]]></text>
+        </falsefeedback>
+      </node>
+      <node>
+        <name>3</name>
+        <description></description>
+        <answertest>AlgEquiv</answertest>
+        <sans>full_factorial</sans>
+        <tans>1</tans>
+        <testoptions></testoptions>
+        <quiet>0</quiet>
+        <truescoremode>+</truescoremode>
+        <truescore>0</truescore>
+        <truepenalty></truepenalty>
+        <truenextnode>4</truenextnode>
+        <trueanswernote>prt1-4-T</trueanswernote>
+        <truefeedback format="html">
+          <text><![CDATA[<br>
+
+<p>Votre conception donne la priorité à Full Factorial, c'est-à-dire qu'elle inclut tous les traitements comme principe de conception. Chacun des {@number_treatments@} traitements possibles apparaît au moins une fois. Ainsi, vous avez des données sur toutes les combinaisons possibles et vous pouvez considérer toutes les comparaisons possibles dans votre analyse.</p>]]></text>
+        </truefeedback>
+        <falsescoremode>-</falsescoremode>
+        <falsescore>0</falsescore>
+        <falsepenalty></falsepenalty>
+        <falsenextnode>4</falsenextnode>
+        <falseanswernote>prt1-4-F</falseanswernote>
+        <falsefeedback format="html">
+          <text><![CDATA[<br>
+<p>Votre conception compromet Full Factorial en tant que principe de conception car il y a au moins un traitement que vous n’avez pas inclus. Cela signifie que vous n'avez aucune information sur la façon dont ce traitement a pu être effectué et que vous ne pouvez pas l'inclure dans les comparaisons.</p>]]></text>
+        </falsefeedback>
+      </node>
+      <node>
+        <name>4</name>
+        <description></description>
+        <answertest>AlgEquiv</answertest>
+        <sans>interaction</sans>
+        <tans>1</tans>
+        <testoptions></testoptions>
+        <quiet>0</quiet>
+        <truescoremode>+</truescoremode>
+        <truescore>0</truescore>
+        <truepenalty></truepenalty>
+        <truenextnode>5</truenextnode>
+        <trueanswernote>prt1-5-T</trueanswernote>
+        <truefeedback format="html">
+          <text><![CDATA[<br>
+
+<p>Votre conception donne la priorité à Interaction en tant que principe de conception car dans un bloc, il y a quatre traitements comparables mettant en évidence les interactions entre deux facteurs pour une valeur fixe du troisième facteur.</p>]]></text>
+        </truefeedback>
+        <falsescoremode>-</falsescoremode>
+        <falsescore>0</falsescore>
+        <falsepenalty></falsepenalty>
+        <falsenextnode>5</falsenextnode>
+        <falseanswernote>prt1-5-F</falseanswernote>
+        <falsefeedback format="html">
+          <text><![CDATA[<br>
+
+<p>Votre conception compromet l'interaction en tant que principe de conception car aucun des blocs ne contient quatre traitements comparables mettant en évidence les interactions entre deux facteurs pour une valeur fixe du troisième facteur.</p>]]></text>
+        </falsefeedback>
+      </node>
+      <node>
+        <name>5</name>
+        <description></description>
+        <answertest>AlgEquiv</answertest>
+        <sans>internal_variability</sans>
+        <tans>1</tans>
+        <testoptions></testoptions>
+        <quiet>0</quiet>
+        <truescoremode>+</truescoremode>
+        <truescore>0</truescore>
+        <truepenalty></truepenalty>
+        <truenextnode>-1</truenextnode>
+        <trueanswernote>prt1-6-T</trueanswernote>
+        <truefeedback format="html">
+          <text><![CDATA[<br>
+
+<p>Votre conception donne la priorité à la Internal Variability comme principe de conception comme dans un bloc, vous avez au moins un traitement répété. Comme les blocs sont considérés comme homogènes que la répétition dans un bloc peut fournir des informations sur la variabilité interne. Mais vous comparez donc moins de traitements dans au moins un des blocs.</p>]]></text>
+        </truefeedback>
+        <falsescoremode>-</falsescoremode>
+        <falsescore>0</falsescore>
+        <falsepenalty></falsepenalty>
+        <falsenextnode>-1</falsenextnode>
+        <falseanswernote>prt1-6-F</falseanswernote>
+        <falsefeedback format="html">
+          <text><![CDATA[<br>
+
+<p>Votre conception compromet la Internal Variability en tant que principe de conception car il n'y a pas de répétition de traitements dans l'un ou l'autre bloc. Mais cela vous a permis de comparer 6 traitements différents dans chaque bloc.</p>]]></text>
+        </falsefeedback>
+      </node>
+    </prt>
+  </question>
+
+</quiz>
