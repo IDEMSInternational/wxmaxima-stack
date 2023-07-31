@@ -246,13 +246,13 @@ pos_to_coords(num):=block(
     return(makelist(mod(floor((num-1)/clock[i]),factor_lengths[i])+1, i, 1, number_factors))
 );
 
-/* Function to convert a list of strings into a single string listing each entry */
+/* Function to convert a list of strings into a single string listing each entry, broken up by "-" */
 /* Input: List of string values */
 /* Output: Single string */
 list_to_str(list):=block(
     sentence:pop(list),
     for word in list do (
-        sentence: sconcat(sentence, ", ", word)
+        sentence: sconcat(sentence, " - ", word)
     ),
     return(sentence)
 );
@@ -269,12 +269,12 @@ shuffle: [
 treatment_index_list: makelist(i, i, 1, number_treatments);
 treatment_ma_list: makelist(true, i, 1, number_treatments);
 treatment_name_list: makelist(
-    list_to_str(makelist(sconcat(
+    list_to_str(append([sconcat("T", i)], makelist(sconcat(
                 factor_names[j],
                 ": ",
                 factors_info[j][pos_to_coords(i)[j]][2]
                 )
-            , j, 3, number_factors)), 
+            , j, 3, number_factors))), 
     i, 1, number_treatments
 );
 /* Generate final list of options for dropdown */
