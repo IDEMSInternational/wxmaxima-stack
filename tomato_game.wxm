@@ -334,7 +334,7 @@ chosen_treatments: append(
 data_set: makelist(0, i, 1, length(chosen_treatments));
 for i: 1 step 1 thru length(chosen_treatments) do block(
     treatment_coords: pos_to_coords(year_contribution + chosen_treatments[i]),   
-    data_set[i]: append(create_label(treatment_coords), [effect_calculator(treatment_coords) + error_sd*quantile_normal(rand(1.0),error_mean,1)])
+    data_set[i]: append(create_label(treatment_coords), [float(base_yield + effect_calculator(treatment_coords) + error_sd*quantile_normal(rand(1.0),error_mean,1))])
 );
 
 /* Add headers */
