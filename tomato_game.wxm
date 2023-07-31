@@ -111,14 +111,14 @@ debug:true;
 
 
 /* [wxMaxima: input   start ] */
-/* INFORMATION FROM QUESTION AUTHORS */
+/* ------------- INFORMATION FROM QUESTION AUTHORS */
 
 /* ["Year", "Block", "Optional factor 1", "Optional factor 2", ...] */
 factor_names:["Year", "Block", "Factor 1", "Factor 2", "Factor 3"];
 
-/* Element format: [
-    [F1-V1 effect, "Factor 1 - Variety 1"], 
-    [F1-V2 effect, "Factor 1 - Variety 2"], 
+/* Factor Info Structure: [
+    [F1-V1 effect, "Factor 1 - Value 1"], 
+    [F1-V2 effect, "Factor 1 - Value 2"], 
     ...
 ] */
 factors_info:[
@@ -131,21 +131,21 @@ factors_info:[
         [2000, "Block B"]
     ],
     [
-        [100, "Variety 1"], 
-        [200, "Variety 2"]
+        [100, "Value 1"], 
+        [200, "Value 2"]
     ],
     [
-        [10, "Variety 1"], 
-        [20, "Variety 2"]
+        [10, "Value 1"], 
+        [20, "Value 2"]
     ],
     [
-        [1, "Variety 1"], 
-        [2, "Variety 2"], 
-        [3, "Variety 3"]
+        [1, "Value 1"], 
+        [2, "Value 2"], 
+        [3, "Value 3"]
     ]
 ];
 
-/* Element format: [
+/* Interactions Info Structure: [
     "Factor 1 name (m varieties)", 
     "Factor 2 name (n varieties)", 
     Factor interaction matrix (n x m matrix)
@@ -161,30 +161,29 @@ interactions_info:[
     ]]
 ];
 
+/* INITIAL CONDITIONS */
 year_coord:1;
-
 base_yield:0;
 error_mean:0;
 error_sd:0;
 
+/* ------------- END AUTHOR INFO */
+
 
 /* DATA SET DIMENSIONS */
-
 number_factors: length(factors_info);
 number_treatments: product(length(factors_info[i]), i, 3, length(factors_info));
 
 
 /* CONTRIBUTION TO POSITION FROM YEAR */
-
 number_blocks: length(factors_info[2]);
 year_contribution: number_blocks*number_treatments*(year_coord-1);
 
 
 /* FUNCTIONS */
-
-/*Function to calculate the expected yield for a given data row*/
-/*Input: list of coordinates for each factor*/
-/*Output: expected yield for the given combination of factors without interactions*/
+/* Function to calculate the expected yield for a given data row */
+/* Input: list of coordinates for each factor */
+/* Output: expected yield for the given combination of factors with interactions */
 effect_calculator(coords):=block(
     [
         factors_info:factors_info,
@@ -199,29 +198,22 @@ effect_calculator(coords):=block(
         factor2_var_index,
         interaction_effect
     ],
-    
     single_effects_sum: sum(factors_info[counter_1][coords[counter_1]][1], counter_1, 1, length(factors_info)),
-    
     interaction_effect_sum: 0,
-    for interaction in interactions_info do block(
-        
+    for interaction in interactions_info do block(       
         factor1_index: sublist_indices(factor_names, lambda([x], x=interaction[1]))[1],
         factor2_index: sublist_indices(factor_names, lambda([x], x=interaction[2]))[1],
-        
         factor1_var_index: coords[factor1_index],
         factor2_var_index: coords[factor2_index],
-        
         interaction_effect: interaction[3][factor1_var_index][factor2_var_index],
         interaction_effect_sum: interaction_effect_sum + interaction_effect
-        
     ),
-    
     return(single_effects_sum + interaction_effect_sum)
 );
 
-/*Function to create the labels for a given data row*/
-/*Input: List of coordinates for each factor*/
-/*Output: list of labels for the given combination of factors without interactions*/
+/* Function to create the labels for a given data row */
+/* Input: List of coordinates for each factor */
+/* Output: list of labels for the given combination of factors without interactions */
 create_label(coords):=block(
     [
         factors_info:factors_info,
@@ -234,7 +226,8 @@ create_label(coords):=block(
 );
 
 /* Function to map position of item in list to coordinates in nested data list */
-/* Input: position of item in list, number between 1 and number_rows */
+/* Input: position of item in list, number between 1 and the number of all possible environments
+(i.e. *number of years* x *number of blocks* x *number of student specified treatments*) */
 /* Output: relevant coordinates in factors_info list */
 pos_to_coords(num):=block(
     [factors_info:factors_info, 
@@ -266,12 +259,13 @@ list_to_str(list):=block(
 
 
 /* QUESTION VARIABLES */
-
+/* Randomize the order of the packets within the blocks? */
 shuffle: [
     [1, true, "Yes"],
     [2, false, "No"]
 ];
-
+/* Treatment dropdown list generation */
+/* Generate base info for options in dropdown */
 treatment_index_list: makelist(i, i, 1, number_treatments);
 treatment_ma_list: makelist(true, i, 1, number_treatments);
 treatment_name_list: makelist(
@@ -283,17 +277,16 @@ treatment_name_list: makelist(
             , j, 3, number_factors)), 
     i, 1, number_treatments
 );
-
+/* Generate final list of options for dropdown */
 treatments: makelist(
     [treatment_index_list[i], treatment_ma_list[i], treatment_name_list[i]], 
     i, 1, number_treatments
 );
 
-/* STUDENT ANSWERS */
 
+/* STUDENT ANSWERS */
 /* Randomize order? */
 ans13: 0;
-
 /* Block A */
 ans1: 1;
 ans2: 1;
@@ -301,7 +294,6 @@ ans3: 2;
 ans4: 3;
 ans5: 4;
 ans6: 5;
-
 /* Block B */
 ans7: 1;
 ans8: 2;
@@ -312,16 +304,20 @@ ans12: 1;
 
 
 /* FEEDBACK VARIABLES */
-
 /* Gather answer list of treatments chosen from table of dropdowns - Hard-coded */
-
 block_a_ans: [ans1,ans2,ans3,ans4,ans5,ans6];
 if ans13 = 1 then block_a_ans: random_permutation(block_a_ans);
-
 block_b_ans: [ans7,ans8,ans9,ans10,ans11,ans12];
 if ans13 = 1 then block_b_ans: random_permutation(block_b_ans);
 
-/* List the chosen treatements with the added contribution to the position from the block */
+/* List the chosen treatements:
+Each possible growing environment (including year and block) is indexed sequentially
+The student specifies the treatment, however there are 4 possible growing environments for any given treatment
+(assuming 2 years and 2 blocks).
+To ensure the chosen block is taken into account within this indexing, 
+we add the total number of user specified "treatments" to the growing environments in block B 
+The contribution of the year is dealt with seperately, since it applies to all the packets
+(see the definition of "treatment_coords") */
 chosen_treatments: append(
     block_a_ans,
     block_b_ans + number_treatments*[1,1,1,1,1,1]
@@ -334,15 +330,11 @@ chosen_treatments: append(
 )
 */
 
-/*Calculate yield of each option*/
-
+/* Calculate yield of each option */
 data_set: makelist(0, i, 1, length(chosen_treatments));
-
 for i: 1 step 1 thru length(chosen_treatments) do block(
-    
     treatment_coords: pos_to_coords(year_contribution + chosen_treatments[i]),   
     data_set[i]: append(create_label(treatment_coords), [effect_calculator(treatment_coords)])
-
 );
 
 /* Add headers */
