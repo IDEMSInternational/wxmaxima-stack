@@ -21,11 +21,11 @@ Note, that plots *will not work* in this sandbox.
 /* [wxMaxima: input   start ] */
 /* No trailing slash. */
 /*Santiago, Emmaculate details*/
-
+/*
 maximaplatform:"win"$
 stacklocation:"c:/tmp/stackroot"$
 stacktmplocation:"c:/tmp/stackroot"$
-
+*/
 
 /*Mary details*/
 /*
@@ -35,11 +35,11 @@ stacktmplocation:""$
 */
 
 /*Dan details*/
-/*
+
 maximaplatform:"win"$
 stacklocation:"C:/Users/James/OneDrive/Documents/007_wxMaxima/STACK_sandbox"$
 stacklocation:"C:/Users/James/OneDrive/Documents/007_wxMaxima/STACK_sandbox"$
-*/
+
 
 /*Wastalas details*/
 /*
@@ -111,7 +111,94 @@ debug:true;
 
 
 /* [wxMaxima: input   start ] */
-;
+/* ------------- INFORMATION FROM QUESTION AUTHORS */
+
+/* [Factor name, data generation type, data generation info] */
+/* Factor name is given as a string */
+/* Data generation type is one from the list below.
+The generation info is given as a list and contains information both for calculating the 
+correct randomized values which the data should take and the possible errors which can 
+occur in the data:
+For qualitative data, possible errors are given in a list of the actual error value
+For quantitative data, possible errors are given in a list of formulae which can be applied 
+to the correct values (these formula may of course be simply constant values!)
+The desired number of errors should also be given, each possible error in the list is 
+then applied with equal probability */
+
+/* 
+1. "Option from list", [
+    ["Option 1", *probability 1*, errors list, *number of errors*], ...
+]
+
+2. "Integer in range", [
+    *lower bound*, *upper bound*, *mean*, error formulae list, *number of errors*
+]
+
+3. "Sequential index", [
+    *start value*, error formulae list, *number of errors*
+]
+
+4. "Normal distribution", [
+    *mean*, *standard deviation*, error formulae list, *number of errors*
+] 
+*/
+
+factor_info: [
+    ["ID", "Sequential index", 
+        [1, [], 0]
+    ],
+    ["Sex", "Option from list", [
+        ["Male", 0.5, ["M", "m", "male", "man"], rand_with_step(30,60,1)], 
+        ["Female", 0.5, ["F", "f", "female", "woman", "fem", "femelle"], rand_with_step(30,60,1)]
+    ]],
+    ["Age", "Integer in range", 
+        [18, 65, 30, [lamda([x], 2023-x)], rand_with_step(1,3,1)]
+    ],
+    ["Village", "Option from list", [
+        ["Village 1", 0.2, [], 0], 
+        ["Village 2", 0.5, [], 0], 
+        ["Village 3", 0.3, [], 0]
+    ]],
+    ["Variety", "Option from list", [
+        ["New", 0.5, ["N", "n", "new", "Nouveau", "nouveau", "nouv."], rand_with_step(20,40,1)], 
+        ["Traditional", 0.5, ["T", "t", "traditional", "Traditionnelle", "traditionnelle", "trad."], rand_with_step(20,40,1)]
+    ]],
+    ["Yield", "Normal distribution", 
+        [40000, 10000, [lamda([x], float(-(rand(10000)+1)/1000))], 1]
+    ]
+];
+
+/* Dataset dimensions */
+number_rows: 100;
+
+/* ------------- END AUTHOR INFO */
+
+/* Useful variables */
+number_factors: length(factor_info);
+factor_names: makelist(factor_info[i][1], i, 1, number_factors);
+
+/* Generate data for each factor */
+for factor in factor_info do block(
+    if factor[2] = "Option from list" then do block(
+        makelist(0,i,1,number_factors)
+    )
+    else if factor[2] = "Integer in range" then do block(
+        makelist(0,i,1,number_factors)
+    )
+    else if factor[2] = "Sequential index" then do block(
+        makelist(0,i,1,number_factors)
+    )
+    else if factor[2] = "Normal distribution" then do block(
+        makelist(0,i,1,number_factors)
+    )
+);
+/* Generate randomised correct values */
+
+/* Introduce required errors in random positions */
+
+/* Generate dataset from data for each factor */
+/* Create rows of data */
+/* Add headers */
 /* [wxMaxima: input   end   ] */
 
 
