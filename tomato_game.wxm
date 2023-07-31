@@ -352,7 +352,7 @@ coord_list:makelist(0,i,1,number_rows);
 for i: 1 thru number_rows do (
     coords: pos_to_coords(ceiling(i/replications)),
     coord_list[i]: coords,
-    yield_value: float(base_yield + effect_calculator(coords) + error_sd*quantile_normal(rand(1.0),error_mean,1)),
+    yield_value: max(float(base_yield + effect_calculator(coords) + error_sd*quantile_normal(rand(1.0),error_mean,1)), 0),
     label_value: create_label(coords),
     data_set[i]: append(label_value, [yield_value])
 );
