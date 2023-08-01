@@ -153,7 +153,7 @@ factor_info: [
     ["Sex", "Option from list", [
         ["Male", 0.5, ["M", "m", "male", "man"]], 
         ["Female", 0.5, ["F", "f", "female", "woman", "fem", "femelle"]],
-        rand_with_step(30,60,1)
+        rand_with_step(20,40,1)
     ]],
     ["Age", "Integer in range", 
         [18, 65, 30, [2023-x], rand_with_step(1,3,1)]
@@ -282,7 +282,7 @@ for factor in factor_info do block(
 );
 
 /* Rotate the data to be given in rows rather than columns of each factor, also add header row */
-dataset: append([factor_names], makelist(makelist(column_data[j][i], j, 1, number_factors), i, 1, number_rows));
+data_set: append([factor_names], makelist(makelist(column_data[j][i], j, 1, number_factors), i, 1, number_rows));
 
 /* Add headers */
 /* [wxMaxima: input   end   ] */
