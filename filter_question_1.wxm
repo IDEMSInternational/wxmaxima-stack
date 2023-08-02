@@ -1,0 +1,293 @@
+/* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
+/* [ Created with wxMaxima version 22.04.0 ] */
+/* [wxMaxima: title   start ]
+STACK Sandbox
+   [wxMaxima: title   end   ] */
+
+
+/* [wxMaxima: comment start ]
+This document loads the extra files needed for STACK.
+See https://github.com/maths/moodle-qtype_stack
+
+1. Set your operation system in the variable maximaplatform. For Windows set it to "win".
+2. If needed, set the stacklocation variable to the location of this sandbox file and the needed maxima and lisp files.
+3. Specify a directory for temporary working files, e.g. /tmp or C:/tmp
+[Directories in 2 & 3 can be the same if you don't mind clutter.]
+
+Note, that plots *will not work* in this sandbox.
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* No trailing slash. */
+/*Santiago, Emmaculate details*/
+/*
+maximaplatform:"win"$
+stacklocation:"c:/tmp/stackroot"$
+stacktmplocation:"c:/tmp/stackroot"$
+*/
+
+/*Mary details*/
+/*
+maximaplatform:""$
+stacklocation:""$
+stacktmplocation:""$
+*/
+
+/*Dan details*/
+
+maximaplatform:"win"$
+stacklocation:"C:/Users/James/OneDrive/Documents/007_wxMaxima/STACK_sandbox"$
+stacklocation:"C:/Users/James/OneDrive/Documents/007_wxMaxima/STACK_sandbox"$
+
+
+/*Wastalas details*/
+/*
+maximaplatform:""$
+stacklocation:""$
+stacktmplocation:""$
+*/
+
+/* For MS platforms you normally need to explicitly set the path.
+   Use the forward slash as a directory seperator.
+   You have cloned your code into c:/tmp/stackroot   
+*/
+
+/*
+maximaplatform:"win"$
+stacklocation:"c:/tmp/stackroot/stack"$
+*/
+
+
+/****************************************************
+   There should be no need to edit below this line.  
+   
+   These commands add the location to Maxima's search path. 
+*/
+file_search_maxima:append( [sconcat(stacklocation, "/stack/maxima/###.{mac,mc}")] , file_search_maxima)$
+file_search_lisp:append( [sconcat(stacklocation, "/stack/maxima/###.{lisp}")] , file_search_lisp)$
+file_search_maxima:append( [sconcat(stacktmplocation, "/###.{mac,mc}")] , file_search_maxima)$
+file_search_lisp:append( [sconcat(stacktmplocation, "/###.{lisp}")] , file_search_lisp)$
+
+STACK_SETUP(ex):=block(
+    MAXIMA_VERSION_NUM_EXPECTED:0,
+    MAXIMA_PLATFORM:maximaplatform,
+    maxima_tempdir:"",
+    IMAGE_DIR:"",
+    PLOT_SIZE:[450,300],
+    PLOT_TERMINAL:"svg",
+    PLOT_TERM_OPT:"dynamic font \",11\" linewidth 1.2",
+    DEL_CMD:"rm",
+    GNUPLOT_CMD:"gnuplot",
+    MAXIMA_VERSION_EXPECTED:"default",
+    URL_BASE:"!ploturl!",
+    /* Define units available in STACK. */
+    stack_unit_si_prefix_code:[y, z, a, f, p, n, u, m, c, d, da, h, k, M, G, T, P, E, Z, Y],
+    stack_unit_si_prefix_multiplier:[10^-24, 10^-21, 10^-18, 10^-15, 10^-12, 10^-9, 10^-6, 10^-3, 10^-2, 10^-1, 10, 10^2, 10^3, 10^6, 10^9, 10^12, 10^15, 10^18, 10^21, 10^24],
+    stack_unit_si_prefix_tex:["\\mathrm{y}", "\\mathrm{z}", "\\mathrm{a}", "\\mathrm{f}", "\\mathrm{p}", "\\mathrm{n}", "\\mu ", "\\mathrm{m}", "\\mathrm{c}", "\\mathrm{d}", "\\mathrm{da}", "\\mathrm{h}", "\\mathrm{k}", "\\mathrm{M}", "\\mathrm{G}", "\\mathrm{T}", "\\mathrm{P}", "\\mathrm{E}", "\\mathrm{Z}", "\\mathrm{Y}"],
+    stack_unit_si_unit_code:[m, l, L, g, t, s, h, Hz, Bq, cd, N, Pa, cal, Cal, Btu, eV, J, W, A, ohm, C, V, F, S, Wb, T, H, Gy, rem, Sv, lx, lm, mol, M, kat, rad, sr, K, VA, eV],
+    stack_unit_si_unit_conversions:[m, m^3/1000, m^3/1000, kg/1000, 1000*kg, s, s*3600, 1/s, 1/s, cd, (kg*m)/s^2, kg/(m*s^2), 4.2*J, 4200*J, 1055*J, 1.602177e-19*J, (kg*m^2)/s^2, (kg*m^2)/s^3, A, (kg*m^2)/(s^3*A^2), s*A, (kg*m^2)/(s^3*A), (s^4*A^2)/(kg*m^2), (s^3*A^2)/(kg*m^2), (kg*m^2)/(s^2*A), kg/(s^2*A), (kg*m^2)/(s^2*A^2), m^2/s^2, 0.01*Sv, m^2/s^2, cd/m^2, cd, mol, mol/(m^3/1000), mol/s, rad, sr, K, (kg*m^2)/(s^3), 1.602176634E-19*J],
+    stack_unit_si_unit_tex:["\\mathrm{m}", "\\mathrm{l}", "\\mathrm{L}", "\\mathrm{g}", "\\mathrm{t}", "\\mathrm{s}", "\\mathrm{h}", "\\mathrm{Hz}", "\\mathrm{Bq}", "\\mathrm{cd}", "\\mathrm{N}", "\\mathrm{Pa}", "\\mathrm{cal}", "\\mathrm{cal}", "\\mathrm{Btu}", "\\mathrm{eV}", "\\mathrm{J}", "\\mathrm{W}", "\\mathrm{A}", "\\Omega", "\\mathrm{C}", "\\mathrm{V}", "\\mathrm{F}", "\\mathrm{S}", "\\mathrm{Wb}", "\\mathrm{T}", "\\mathrm{H}", "\\mathrm{Gy}", "\\mathrm{rem}", "\\mathrm{Sv}", "\\mathrm{lx}", "\\mathrm{lm}", "\\mathrm{mol}", "\\mathrm{M}", "\\mathrm{kat}", "\\mathrm{rad}", "\\mathrm{sr}", "\\mathrm{K}", "\\mathrm{VA}", "\\mathrm{eV}"],
+    stack_unit_other_unit_code:[min, amu, u, mmHg, bar, ha, cc, gal, mbar, atm, torr, rev, deg, rpm, au, Da, Np, B, dB, day, year, hp, in, ft, yd, mi, lb],
+    stack_unit_other_unit_conversions:[s*60, amu, amu, 133.322387415*Pa, 10^5*Pa, 10^4*m^2, m^3*10^(-6), 3.785*l, 10^2*Pa, 101325*Pa, 101325/760*Pa, 2*pi*rad, pi*rad/180, pi*rad/(30*s), 149597870700*m, 1.660539040E-27*kg, Np, B, dB, 86400*s, 3.156e7*s, hp, in, 12*in, 36*in, 5280*12*in, lb],
+    stack_unit_other_unit_tex:["\\mathrm{min}", "\\mathrm{amu}", "\\mathrm{u}", "\\mathrm{mmHg}", "\\mathrm{bar}", "\\mathrm{ha}", "\\mathrm{cc}", "\\mathrm{gal}", "\\mathrm{mbar}", "\\mathrm{atm}", "\\mathrm{torr}", "\\mathrm{rev}", "\\mathrm{{}^{o}}", "\\mathrm{rpm}", "\\mathrm{au}", "\\mathrm{Da}", "\\mathrm{Np}", "\\mathrm{B}", "\\mathrm{dB}", "\\mathrm{day}", "\\mathrm{year}", "\\mathrm{hp}", "\\mathrm{in}", "\\mathrm{ft}", "\\mathrm{yd}", "\\mathrm{mi}", "\\mathrm{lb}"],
+    true)$
+
+/* Load the main libraries. */
+load("stackmaxima.mac")$
+load("stats")$
+load("distrib")$
+load("descriptive")$
+print(sconcat("[ STACK-Maxima started, library version ", stackmaximaversion, " ]"))$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Optional but useful. */
+display2d:true;
+simp:true;
+debug:true;
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* ------------- INFORMATION FROM QUESTION AUTHORS */
+
+/* [Factor name, data generation type, data generation info] */
+/* Factor name is given as a string */
+/* Data generation type is one from the list below.
+The generation info is given as a list and contains information both for calculating the 
+correct randomized values which the data should take and the possible errors which can 
+occur in the data:
+For qualitative data, possible errors are given in a list of the actual error value
+For quantitative data, possible errors are given in a list of formulae which can be applied 
+to the correct values (these formula may of course be simply constant values!)
+The desired number of errors should also be given, each possible error in the list is 
+then applied with equal probability */
+
+/* 
+1. "Option from list", [
+    ["Option 1", *probability 1*, errors list],
+    ["Option 2", *probability 2*, errors list], 
+    ...,
+    *number of errors*
+]
+
+2. "Integer in range", [
+    *lower bound*, *upper bound*, *mean* (need to add this functionality), error formulae list, *number of errors*
+]
+
+3. "Sequential index", [
+    *start value*, error formulae list, *number of errors*
+]
+
+4. "Normal distribution", [
+    *mean*, *standard deviation*, error formulae list, *number of errors*
+] 
+*/
+
+factor_info: [
+    ["ID", "Sequential index", 
+        [1, [], 0]
+    ],
+    ["Sex", "Option from list", [
+        ["Male", 0.5, ["M", "m", "male", "man"]], 
+        ["Female", 0.5, ["F", "f", "female", "woman", "fem", "femelle"]],
+        rand_with_step(20,40,1)
+    ]],
+    ["Age", "Integer in range", 
+        [18, 65, 30, [2023-x], rand_with_step(1,3,1)]
+    ],
+    ["Village", "Option from list", [
+        ["Village 1", 0.2, []], 
+        ["Village 2", 0.5, []], 
+        ["Village 3", 0.3, []],
+        0
+    ]],
+    ["Variety", "Option from list", [
+        ["New", 0.5, ["N", "n", "new", "Nouveau", "nouveau", "nouv."]], 
+        ["Traditional", 0.5, ["T", "t", "traditional", "Traditionnelle", "traditionnelle", "trad."]],
+        rand_with_step(20,40,1)
+    ]],
+    ["Yield", "Normal distribution", 
+        [40000, 10000, [-rand(1000)], 1]
+    ]
+];
+
+/* Dataset dimensions */
+number_rows: 100;
+
+/* ------------- END AUTHOR INFO */
+
+
+column_data: [];
+
+/* Useful variables */
+number_factors: length(factor_info);
+factor_names: makelist(factor_info[i][1], i, 1, number_factors);
+row_list: makelist(i, i, 1, number_rows);
+
+/* Generate data for each factor */
+for factor in factor_info do block(
+    
+    /* "Option from list" factor type */
+    if factor[2] = "Option from list" then block(
+        
+        /* Extract important information */
+        number_options: length(factor[3])-1,
+        option_values: makelist(factor[3][i][1], i, 1, number_options),
+        option_probabilities: makelist(factor[3][i][2], i, 1, number_options),
+        option_errors: makelist(factor[3][i][3], i, 1, number_options),
+        number_errors: last(factor[3]),
+        factor_data: [],
+        
+        /* Generate randomised correct values */
+        /* Assign each option in the list a interval in [0,1] of length equal to the associated probability */
+        value_prob_ranges: makelist(
+            [sum(option_probabilities[j], j, 1, i-1), sum(option_probabilities[j], j, 1, i)], i, 1, number_options
+        ),
+        /* Randomise choice of option by generating a number in [0,1] and determining in which interval it falls */
+        for i: 1 thru number_rows step 1 do block(
+            rn: rand(1.0),
+            for j: 1 thru number_options step 1 do block(
+                if value_prob_ranges[j][1] <= rn and rn < value_prob_ranges[j][2] then factor_data: append(factor_data, [option_values[j]])
+            )
+        ),
+        
+        /* Introduce random errors in random positions */
+        error_rows: sort(rand_selection(row_list, number_errors)),
+        for i: 1 thru number_errors step 1 do block(
+            for j: 1 thru number_options do block(
+                if factor_data[error_rows[i]] = option_values[j] then (factor_data[error_rows[i]]: rand(option_errors[j]))
+            )
+        )
+    )
+    
+    /* "Integer in range" factor type */
+    else if factor[2] = "Integer in range" then block(
+        
+        /* Extract important information */
+        option_errors: factor[3][4],
+        number_errors: factor[3][5],
+        
+        /* Generate randomised correct values */
+        factor_data: makelist(rand_with_step(factor[3][1], factor[3][2], 1), i, 1, number_rows),
+        
+        /* Introduce random errors in random positions */
+        error_rows: sort(rand_selection(row_list, number_errors)),
+        for i: 1 thru number_errors step 1 do (
+            factor_data[error_rows[i]]: ev(rand(option_errors), x=factor_data[error_rows[i]])
+        )
+    )
+    
+    /* "Sequential index" factor type */
+    else if factor[2] = "Sequential index" then block(
+        
+        /* Extract important information */
+        option_errors: factor[3][2],
+        number_errors: factor[3][3],
+        
+        /* Generate randomised correct values */
+        factor_data: makelist(factor[3][1] - 1 + i, i, 1, number_rows),
+        
+        /* Introduce random errors in random positions */
+        error_rows: sort(rand_selection(row_list, number_errors)),
+        for i: 1 thru number_errors step 1 do (
+            factor_data[error_rows[i]]: ev(rand(option_errors), x=factor_data[error_rows[i]])
+        )
+        
+    )
+    
+    /* "Normal distribution" factor type */
+    else if factor[2] = "Normal distribution" then block(
+        
+        /* Extract important information */
+        option_errors: factor[3][3],
+        number_errors: factor[3][4],
+        
+        /* Generate randomised correct values */
+        factor_data: makelist(ceiling(random_normal(factor[3][1], factor[3][2])), i, 1, number_rows),
+        
+        /* Introduce random errors in random positions */
+        error_rows: sort(rand_selection(row_list, number_errors)),
+        for i: 1 thru number_errors step 1 do (
+            factor_data[error_rows[i]]: ev(rand(option_errors), x=factor_data[error_rows[i]])
+        )
+        
+    ),
+    
+    /* Append data for each factor to the dataset */
+    column_data: append(column_data, [factor_data])
+
+);
+
+/* Rotate the data to be given in rows rather than columns of each factor, also add header row */
+data_set: append([factor_names], makelist(makelist(column_data[j][i], j, 1, number_factors), i, 1, number_rows));
+
+/* Add headers */
+/* [wxMaxima: input   end   ] */
+
+
+
+/* Old versions of Maxima abort on loading files that end in a comment. */
+"Created with wxMaxima 22.04.0"$

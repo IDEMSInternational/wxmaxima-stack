@@ -1,0 +1,305 @@
+/* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
+/* [ Created with wxMaxima version 22.04.0 ] */
+/* [wxMaxima: title   start ]
+STACK Sandbox
+   [wxMaxima: title   end   ] */
+
+
+/* [wxMaxima: comment start ]
+This document loads the extra files needed for STACK.
+See https://github.com/maths/moodle-qtype_stack
+
+1. Set your operation system in the variable maximaplatform. For Windows set it to "win".
+2. If needed, set the stacklocation variable to the location of this sandbox file and the needed maxima and lisp files.
+3. Specify a directory for temporary working files, e.g. /tmp or C:/tmp
+[Directories in 2 & 3 can be the same if you don't mind clutter.]
+
+Note, that plots *will not work* in this sandbox.
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* No trailing slash. */
+/*Santiago, Emmaculate details*/
+/*
+maximaplatform:"win"$
+stacklocation:"c:/tmp/stackroot"$
+stacktmplocation:"c:/tmp/stackroot"$
+*/
+
+/*Mary details*/
+/*
+maximaplatform:""$
+stacklocation:""$
+stacktmplocation:""$
+*/
+
+/*Dan details*/
+
+maximaplatform:"win"$
+stacklocation:"C:/Users/James/OneDrive/Documents/007_wxMaxima/STACK_sandbox"$
+stacklocation:"C:/Users/James/OneDrive/Documents/007_wxMaxima/STACK_sandbox"$
+
+
+/*Wastalas details*/
+/*
+maximaplatform:""$
+stacklocation:""$
+stacktmplocation:""$
+*/
+
+/* For MS platforms you normally need to explicitly set the path.
+   Use the forward slash as a directory seperator.
+   You have cloned your code into c:/tmp/stackroot   
+*/
+
+/*
+maximaplatform:"win"$
+stacklocation:"c:/tmp/stackroot/stack"$
+*/
+
+
+/****************************************************
+   There should be no need to edit below this line.  
+   
+   These commands add the location to Maxima's search path. 
+*/
+file_search_maxima:append( [sconcat(stacklocation, "/stack/maxima/###.{mac,mc}")] , file_search_maxima)$
+file_search_lisp:append( [sconcat(stacklocation, "/stack/maxima/###.{lisp}")] , file_search_lisp)$
+file_search_maxima:append( [sconcat(stacktmplocation, "/###.{mac,mc}")] , file_search_maxima)$
+file_search_lisp:append( [sconcat(stacktmplocation, "/###.{lisp}")] , file_search_lisp)$
+
+STACK_SETUP(ex):=block(
+    MAXIMA_VERSION_NUM_EXPECTED:0,
+    MAXIMA_PLATFORM:maximaplatform,
+    maxima_tempdir:"",
+    IMAGE_DIR:"",
+    PLOT_SIZE:[450,300],
+    PLOT_TERMINAL:"svg",
+    PLOT_TERM_OPT:"dynamic font \",11\" linewidth 1.2",
+    DEL_CMD:"rm",
+    GNUPLOT_CMD:"gnuplot",
+    MAXIMA_VERSION_EXPECTED:"default",
+    URL_BASE:"!ploturl!",
+    /* Define units available in STACK. */
+    stack_unit_si_prefix_code:[y, z, a, f, p, n, u, m, c, d, da, h, k, M, G, T, P, E, Z, Y],
+    stack_unit_si_prefix_multiplier:[10^-24, 10^-21, 10^-18, 10^-15, 10^-12, 10^-9, 10^-6, 10^-3, 10^-2, 10^-1, 10, 10^2, 10^3, 10^6, 10^9, 10^12, 10^15, 10^18, 10^21, 10^24],
+    stack_unit_si_prefix_tex:["\\mathrm{y}", "\\mathrm{z}", "\\mathrm{a}", "\\mathrm{f}", "\\mathrm{p}", "\\mathrm{n}", "\\mu ", "\\mathrm{m}", "\\mathrm{c}", "\\mathrm{d}", "\\mathrm{da}", "\\mathrm{h}", "\\mathrm{k}", "\\mathrm{M}", "\\mathrm{G}", "\\mathrm{T}", "\\mathrm{P}", "\\mathrm{E}", "\\mathrm{Z}", "\\mathrm{Y}"],
+    stack_unit_si_unit_code:[m, l, L, g, t, s, h, Hz, Bq, cd, N, Pa, cal, Cal, Btu, eV, J, W, A, ohm, C, V, F, S, Wb, T, H, Gy, rem, Sv, lx, lm, mol, M, kat, rad, sr, K, VA, eV],
+    stack_unit_si_unit_conversions:[m, m^3/1000, m^3/1000, kg/1000, 1000*kg, s, s*3600, 1/s, 1/s, cd, (kg*m)/s^2, kg/(m*s^2), 4.2*J, 4200*J, 1055*J, 1.602177e-19*J, (kg*m^2)/s^2, (kg*m^2)/s^3, A, (kg*m^2)/(s^3*A^2), s*A, (kg*m^2)/(s^3*A), (s^4*A^2)/(kg*m^2), (s^3*A^2)/(kg*m^2), (kg*m^2)/(s^2*A), kg/(s^2*A), (kg*m^2)/(s^2*A^2), m^2/s^2, 0.01*Sv, m^2/s^2, cd/m^2, cd, mol, mol/(m^3/1000), mol/s, rad, sr, K, (kg*m^2)/(s^3), 1.602176634E-19*J],
+    stack_unit_si_unit_tex:["\\mathrm{m}", "\\mathrm{l}", "\\mathrm{L}", "\\mathrm{g}", "\\mathrm{t}", "\\mathrm{s}", "\\mathrm{h}", "\\mathrm{Hz}", "\\mathrm{Bq}", "\\mathrm{cd}", "\\mathrm{N}", "\\mathrm{Pa}", "\\mathrm{cal}", "\\mathrm{cal}", "\\mathrm{Btu}", "\\mathrm{eV}", "\\mathrm{J}", "\\mathrm{W}", "\\mathrm{A}", "\\Omega", "\\mathrm{C}", "\\mathrm{V}", "\\mathrm{F}", "\\mathrm{S}", "\\mathrm{Wb}", "\\mathrm{T}", "\\mathrm{H}", "\\mathrm{Gy}", "\\mathrm{rem}", "\\mathrm{Sv}", "\\mathrm{lx}", "\\mathrm{lm}", "\\mathrm{mol}", "\\mathrm{M}", "\\mathrm{kat}", "\\mathrm{rad}", "\\mathrm{sr}", "\\mathrm{K}", "\\mathrm{VA}", "\\mathrm{eV}"],
+    stack_unit_other_unit_code:[min, amu, u, mmHg, bar, ha, cc, gal, mbar, atm, torr, rev, deg, rpm, au, Da, Np, B, dB, day, year, hp, in, ft, yd, mi, lb],
+    stack_unit_other_unit_conversions:[s*60, amu, amu, 133.322387415*Pa, 10^5*Pa, 10^4*m^2, m^3*10^(-6), 3.785*l, 10^2*Pa, 101325*Pa, 101325/760*Pa, 2*pi*rad, pi*rad/180, pi*rad/(30*s), 149597870700*m, 1.660539040E-27*kg, Np, B, dB, 86400*s, 3.156e7*s, hp, in, 12*in, 36*in, 5280*12*in, lb],
+    stack_unit_other_unit_tex:["\\mathrm{min}", "\\mathrm{amu}", "\\mathrm{u}", "\\mathrm{mmHg}", "\\mathrm{bar}", "\\mathrm{ha}", "\\mathrm{cc}", "\\mathrm{gal}", "\\mathrm{mbar}", "\\mathrm{atm}", "\\mathrm{torr}", "\\mathrm{rev}", "\\mathrm{{}^{o}}", "\\mathrm{rpm}", "\\mathrm{au}", "\\mathrm{Da}", "\\mathrm{Np}", "\\mathrm{B}", "\\mathrm{dB}", "\\mathrm{day}", "\\mathrm{year}", "\\mathrm{hp}", "\\mathrm{in}", "\\mathrm{ft}", "\\mathrm{yd}", "\\mathrm{mi}", "\\mathrm{lb}"],
+    true)$
+
+/* Load the main libraries. */
+load("stackmaxima.mac")$
+load("stats")$
+load("distrib")$
+load("descriptive")$
+print(sconcat("[ STACK-Maxima started, library version ", stackmaximaversion, " ]"))$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Optional but useful. */
+display2d:true;
+simp:true;
+debug:true;
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* ---------- QUESTION AUTHOR INPUTS */
+
+number_rows: 100;
+
+/* Profit generation values */
+maize_mean: 100;
+maize_sd: 5;
+sorghum_mean: 100;
+sorghum_sd: 10;
+millet_mean: 100;
+millet_sd: 20;
+
+/* Questions posed in each instance of the survey 
+[*question index*, *question dependencies*, "Question text", *question answer generation*] 
+
+Question Index - unique identifier for each different question posed
+
+Question Dependencies - list of the answers to the prior questions which must occur in 
+order for this question to be asked, in the format [*prior question index*, *list of possible answers*]
+
+*/
+questions_posed:[
+   [1, [], "Was maize grown?", lambda([], rand(["Yes", "Yes", "Yes", "No"]))],
+   [2, [], "Was sorghum grown?", lambda([], rand(["Yes", "Yes", "Yes", "No"]))],
+   [3, [], "Was millet grown?", lambda([], rand(["Yes", "Yes", "Yes", "No"]))],
+    
+   [4, [[1, ["Yes"]]], "Was maize sold?", lambda([], rand(["Yes", "Yes", "Yes", "No"]))],
+   [5, [[2, ["Yes"]]], "Was sorghum sold?", lambda([], rand(["Yes", "Yes", "Yes", "No"]))],
+   [6, [[3, ["Yes"]]], "Was millet sold?", lambda([], rand(["Yes", "Yes", "Yes", "No"]))],
+    
+   [7, [[4, ["Yes"]]], "Maize profit", lambda([], round(random_normal(maize_mean, maize_sd)))],
+   [8, [[5, ["Yes"]]], "Sorghum profit", lambda([], round(random_normal(sorghum_mean, sorghum_sd)))],
+   [9, [[6, ["Yes"]]], "Millet profit", lambda([], round(random_normal(millet_mean, sorghum_sd)))]
+];
+
+/* ---------- END OF QUESTION AUTHOR INPUTS */
+
+/* ---------- FUNCTIONS */
+
+/*Function to create the labels for a given data row*/
+/*Input: List of coordinates for each factor*/
+/*Output: list of labels for the given combination of factors without interactions*/
+create_label(coords):=block(
+    [
+        factors_info:factors_info,
+        number_factors:number_factors,
+        i,
+        label_maker
+    ],
+    label_maker:makelist(factors_info[i][coords[i]][2],i,1,number_factors),
+    return(label_maker)
+);
+
+/* Function to map position of item in list to coordinates in data list */
+/* Input: position of item in list, number between 1 and number_rows */
+/* Output: relevant coordinates in factors_info list */
+pos_to_coords(num):=block(
+    [factors_info:factors_info, 
+    number_factors:number_factors,
+    number_rows:number_rows,
+    factor_lengths,
+    clock],
+    factor_lengths: makelist(length(factors_info[i]),i,1,number_factors),
+    /* How regularly is each factor required to change value? */
+    clock:reverse(makelist(
+        product(factor_lengths[j], j, number_factors+1-i, number_factors),
+        i,
+        0,
+        number_factors-1
+    )),
+    return(makelist(mod(floor((num-1)/clock[i]),factor_lengths[i])+1, i, 1, number_factors))
+);
+
+/* ---------- END OF FUNCTIONS */
+
+/* ---------- DATA SET GENERATION */
+
+data_set: [];
+
+/* For each row of factors, fill in the answers to the questions */
+for i: 1 thru number_rows step 1 do (
+    
+    row: [],
+    
+    /* For each question in the survey, fill in the row */
+    for question in questions_posed do (
+        
+        /* Check whether the question dependencies are satisfied */
+        dep_satisfied: true,
+        for dep in question[2] do (
+            if not(member(row[dep[1]], dep[2])) then dep_satisfied:false
+        ),
+        
+        /* If the dependencies are satisfied, add question answer to the row, else add an empty string */
+        if dep_satisfied then
+            row:append(row, [apply(question[4], [])])
+        else 
+            row: append(row, [""])
+    ),
+    
+    /* Update the row in the data set */
+    data_set: append(data_set, [row])
+    
+);
+
+/* Add headers to columns */
+data_set: append(
+    [makelist(x[3], x, questions_posed)],
+    data_set
+);
+
+/* ---------- END OF DATA SET GENERATION */
+
+
+/* ---------- QUESTION VARIABLES */
+
+/* Results if all missing values are ignored */
+maize_sold_list: sublist(data_set, lambda([x], is(x[4]="Yes")));
+mean_sold_maize_profit: mean(makelist(x[7], x, maize_sold_list));
+sorg_sold_list: sublist(data_set, lambda([x], is(x[5]="Yes")));
+mean_sold_sorg_profit: mean(makelist(x[8], x, sorg_sold_list));
+mill_sold_list: sublist(data_set, lambda([x], is(x[6]="Yes")));
+mean_sold_mill_profit: mean(makelist(x[9], x, mill_sold_list));
+
+most_profit_sold: if mean_sold_maize_profit>mean_sold_sorg_profit and mean_sold_maize_profit>mean_sold_mill_profit then "Maize"
+    else if mean_sold_sorg_profit>mean_sold_mill_profit and mean_sold_sorg_profit>mean_sold_maize_profit then "Sorghum"
+    else if mean_sold_mill_profit>mean_sold_maize_profit and mean_sold_mill_profit>mean_sold_sorg_profit then "Millet"
+    else if mean_sold_maize_profit=mean_sold_sorg_profit and mean_sold_maize_profit=mean_sold_sorg_profit then "All equal"
+    else if mean_sold_maize_profit=mean_sold_sorg_profit then "Maize and Sorghum"
+    else if mean_sold_maize_profit=mean_sold_mill_profit then "Maize and Millet"
+    else if mean_sold_sorg_profit=mean_sold_mill_profit then "Sorghum and Millet";
+
+least_profit_sold: if mean_sold_maize_profit<mean_sold_sorg_profit and mean_sold_maize_profit<mean_sold_mill_profit then "Maize"
+    else if mean_sold_sorg_profit<mean_sold_mill_profit and mean_sold_sorg_profit<mean_sold_maize_profit then "Sorghum"
+    else if mean_sold_mill_profit<mean_sold_maize_profit and mean_sold_mill_profit<mean_sold_sorg_profit then "Millet"
+    else if mean_sold_maize_profit=mean_sold_sorg_profit and mean_sold_maize_profit=mean_sold_sorg_profit then "All equal"
+    else if mean_sold_maize_profit=mean_sold_sorg_profit then "Maize and Sorghum"
+    else if mean_sold_maize_profit=mean_sold_mill_profit then "Maize and Millet"
+    else if mean_sold_sorg_profit=mean_sold_mill_profit then "Sorghum and Millet";
+
+/* Results if all missing values are set to be zero */
+mean_all_maize_profit: mean(makelist(if x[4]="Yes" then x[7] else 0, x, data_set));
+mean_all_sorg_profit: mean(makelist(if x[5]="Yes" then x[8] else 0, x, data_set));
+mean_all_mill_profit: mean(makelist(if x[6]="Yes" then x[9] else 0, x, data_set));
+
+most_profit_all: if mean_all_maize_profit>mean_all_sorg_profit and mean_all_maize_profit>mean_all_mill_profit then "Maize"
+    else if mean_all_sorg_profit>mean_all_mill_profit and mean_all_sorg_profit>mean_all_maize_profit then "Sorghum"
+    else if mean_all_mill_profit>mean_all_maize_profit and mean_all_mill_profit>mean_all_sorg_profit then "Millet"
+    else if mean_all_maize_profit=mean_all_sorg_profit and mean_all_maize_profit=mean_all_sorg_profit then "All equal"
+    else if mean_all_maize_profit=mean_all_sorg_profit then "Maize and Sorghum"
+    else if mean_all_maize_profit=mean_all_mill_profit then "Maize and Millet"
+    else if mean_all_sorg_profit=mean_all_mill_profit then "Sorghum and Millet";
+
+least_profit_all: if mean_all_maize_profit<mean_all_sorg_profit and mean_all_maize_profit<mean_all_mill_profit then "Maize"
+    else if mean_all_sorg_profit<mean_all_mill_profit and mean_all_sorg_profit<mean_all_maize_profit then "Sorghum"
+    else if mean_all_mill_profit<mean_all_maize_profit and mean_all_mill_profit<mean_all_sorg_profit then "Millet"
+    else if mean_all_maize_profit=mean_all_sorg_profit and mean_all_maize_profit=mean_all_sorg_profit then "All equal"
+    else if mean_all_maize_profit=mean_all_sorg_profit then "Maize and Sorghum"
+    else if mean_all_maize_profit=mean_all_mill_profit then "Maize and Millet"
+    else if mean_all_sorg_profit=mean_all_mill_profit then "Sorghum and Millet";
+
+/* Results if missing values are ignored when the crop was not grown but set to zero if not sold */
+maize_planted_list: sublist(data_set, lambda([x], is(x[1]="Yes")));
+mean_planted_maize_profit: mean(makelist(if x[4]="Yes" then x[7] else 0, x, maize_planted_list));
+sorg_planted_list: sublist(data_set, lambda([x], is(x[2]="Yes")));
+mean_planted_sorg_profit: mean(makelist(if x[5]="Yes" then x[8] else 0, x, sorg_planted_list));
+mill_planted_list: sublist(data_set, lambda([x], is(x[3]="Yes")));
+mean_planted_mill_profit: mean(makelist(if x[6]="Yes" then x[9] else 0, x, mill_planted_list));
+
+most_profit_sold: if mean_pos_maize_profit>mean_pos_sorg_profit and mean_pos_maize_profit>mean_pos_mill_profit then "Maize"
+    else if mean_pos_sorg_profit>mean_pos_mill_profit and mean_pos_sorg_profit>mean_pos_maize_profit then "Sorghum"
+    else if mean_pos_mill_profit>mean_pos_maize_profit and mean_pos_mill_profit>mean_pos_sorg_profit then "Millet"
+    else if mean_pos_maize_profit=mean_pos_sorg_profit and mean_pos_maize_profit=mean_pos_sorg_profit then "All equal"
+    else if mean_pos_maize_profit=mean_pos_sorg_profit then "Maize and Sorghum"
+    else if mean_pos_maize_profit=mean_pos_mill_profit then "Maize and Millet"
+    else if mean_pos_sorg_profit=mean_pos_mill_profit then "Sorghum and Millet";
+
+least_profit_sold: if mean_pos_maize_profit<mean_pos_sorg_profit and mean_pos_maize_profit<mean_pos_mill_profit then "Maize"
+    else if mean_pos_sorg_profit<mean_pos_mill_profit and mean_pos_sorg_profit<mean_pos_maize_profit then "Sorghum"
+    else if mean_pos_mill_profit<mean_pos_maize_profit and mean_pos_mill_profit<mean_pos_sorg_profit then "Millet"
+    else if mean_pos_maize_profit=mean_pos_sorg_profit and mean_pos_maize_profit=mean_pos_sorg_profit then "All equal"
+    else if mean_pos_maize_profit=mean_pos_sorg_profit then "Maize and Sorghum"
+    else if mean_pos_maize_profit=mean_pos_mill_profit then "Maize and Millet"
+    else if mean_pos_sorg_profit=mean_pos_mill_profit then "Sorghum and Millet";
+
+/* ---------- END OF QUESTION VARIABLES */
+/* [wxMaxima: input   end   ] */
+
+
+
+/* Old versions of Maxima abort on loading files that end in a comment. */
+"Created with wxMaxima 22.04.0"$
