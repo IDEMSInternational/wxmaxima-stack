@@ -14,7 +14,7 @@ gws_question_bank = gss_question_bank.worksheet("title", "Sheet1")
 question_bank_data = gws_question_bank.get_values(start="A1", end="I101")
 
 with open("missing_values_1_database.wxm", "w") as database:
-    database.write("[")
-    for line in question_bank_data:
-        database.write(str(line) + ",\n")
+    database.write("[" + str(question_bank_data[0]).replace("\'", "\""))
+    for line in question_bank_data[1:]:
+        database.write(",\n" + str(line).replace("\'", "\""))
     database.write("];")
