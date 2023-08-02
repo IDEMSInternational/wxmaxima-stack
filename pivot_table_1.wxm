@@ -21,11 +21,11 @@ Note, that plots *will not work* in this sandbox.
 /* [wxMaxima: input   start ] */
 /* No trailing slash. */
 /*Santiago, Emmaculate details*/
-
+/*
 maximaplatform:"win"$
 stacklocation:"c:/tmp/stackroot"$
 stacktmplocation:"c:/tmp/stackroot"$
-
+*/
 
 /*Mary details*/
 /*
@@ -35,11 +35,11 @@ stacktmplocation:""$
 */
 
 /*Dan details*/
-/*
+
 maximaplatform:"win"$
 stacklocation:"C:/Users/James/OneDrive/Documents/007_wxMaxima/STACK_sandbox"$
 stacklocation:"C:/Users/James/OneDrive/Documents/007_wxMaxima/STACK_sandbox"$
-*/
+
 
 /*Wastalas details*/
 /*
@@ -187,15 +187,39 @@ for i: 1 thru number_rows do (
     data_set[i]: append(label_value, [rep_value], [yield_value])
 );
 
-/*Add headers row to data set*/
-headers_row:makelist(0,i,1,number_factors+2);
-headers_row[number_factors+1]:"Replication";
-headers_row[number_factors+2]:"Yield";
-for i:1 thru number_factors do headers_row[i]:factor_names[i];
-data_set:append([headers_row],data_set);
+/* Add headers row to data set */
+data_set:append(
+    [append(factor_names, ["Replication", "Yield"])],
+    data_set
+);
 
-/*NOT FOR STACK: print data set*/
-data_set;
+/* question 1 */
+quest_expr1:rand(["Mean","Minimum","Maximum","Median"]);
+all_yields: makelist(data_set[i][4], i, 2, number_rows+1);
+ta_1: if quest_expr1="Mean" then mean(all_yields)
+    else if quest_expr1="Minimum" then first(sort(all_yields))
+    else if quest_expr1="Maximum" then last(sort(all_yields))
+    else if quest_expr1="Median" then median(all_yields);
+
+/* question 2 */
+quest_expr2:rand(["Mean","Minimum","Maximum","Median"]);
+var1_list: sublist(data_set, lambda([x], is(x[2]="Variety 1")));
+var1_yields: makelist(var1_list[i][4], i, 1, length(var1_list));
+
+ta_2: if quest_expr2="Mean" then mean(var1_yields)
+    else if quest_expr2="Minimum" then first(sort(var1_yields))
+    else if quest_expr2="Maximum" then last(sort(var1_yields))
+    else if quest_expr2="Median" then median(var1_yields);
+
+/* question 2 */
+quest_expr3:rand(["Mean","Minimum","Maximum","Median"]);
+fert1_var1_list: sublist(var1_list, lambda([x], is(x[1]="Fertiliser 1")));
+fert1_var1_yields: makelist(fert1_var1_list[i][4], i, 1, length(fert1_var1_list));
+
+ta_2: if quest_expr3="Mean" then mean(fert1_var1_yields)
+    else if quest_expr3="Minimum" then first(sort(fert1_var1_yields))
+    else if quest_expr3="Maximum" then last(sort(fert1_var1_yields))
+    else if quest_expr3="Median" then median(fert1_var1_yields);
 
 /* [wxMaxima: input   end   ] */
 
