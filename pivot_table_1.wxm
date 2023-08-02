@@ -211,12 +211,12 @@ ta_2: if quest_expr2="Mean" then mean(var1_yields)
     else if quest_expr2="Maximum" then last(sort(var1_yields))
     else if quest_expr2="Median" then median(var1_yields);
 
-/* question 2 */
+/* question 3 */
 quest_expr3:rand(["Mean","Minimum","Maximum","Median"]);
 fert1_var1_list: sublist(var1_list, lambda([x], is(x[1]="Fertiliser 1")));
 fert1_var1_yields: makelist(fert1_var1_list[i][4], i, 1, length(fert1_var1_list));
 
-ta_2: if quest_expr3="Mean" then mean(fert1_var1_yields)
+ta_3: if quest_expr3="Mean" then mean(fert1_var1_yields)
     else if quest_expr3="Minimum" then first(sort(fert1_var1_yields))
     else if quest_expr3="Maximum" then last(sort(fert1_var1_yields))
     else if quest_expr3="Median" then median(fert1_var1_yields);
