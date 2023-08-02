@@ -111,21 +111,17 @@ debug:true;
 
 
 /* [wxMaxima: input   start ] */
-/* Needs work on efficiency - STACK currently times out generating data for 100 farms */
-
 /* ---------- QUESTION AUTHOR INPUTS */
 
-/* Different factors that were surveyed */
-factor_names:["Farm","Crop"];
+number_rows: 100;
 
-/* [*value contribution to profit*, "value name"] */
-factors_info:[
-    makelist([0, sconcat("Farm ", i)], i, 1, 100),
-    [[100, "Maize"], [150, "Sorghum"], [70, "Millet"]]
-];
-
-/* Standard deviation for profit calculation */
-profit_sd: 10;
+/* Profit generation values */
+maize_mean: 100;
+maize_sd: 10;
+sorghum_mean: 150;
+sorghum_sd: 20;
+millet_mean: 80;
+millet_sd: 5;
 
 /* Questions posed in each instance of the survey 
 [*question index*, *question dependencies*, "Question text", *question answer generation*] 
@@ -137,9 +133,17 @@ order for this question to be asked, in the format [*prior question index*, *lis
 
 */
 questions_posed:[
-   [1, [], "Was this crop grown?", lambda([], rand(["Yes", "Yes", "Yes", "Yes", "No"]))],
-   [2, [[1, ["Yes"]]], "Was this crop sold?", lambda([], rand(["Yes", "Yes", "Yes", "Yes", "No"]))],
-   [3, [[2, ["Yes"]]], "What was the profit?", lambda([mean,sd], mean+sd*random_normal(0,1))]
+   [1, [], "Was maize grown?", lambda([], rand(["Yes", "Yes", "Yes", "No"]))],
+   [2, [], "Was sorghum grown?", lambda([], rand(["Yes", "Yes", "Yes", "No"]))],
+   [3, [], "Was millet grown?", lambda([], rand(["Yes", "Yes", "Yes", "No"]))],
+    
+   [4, [[1, ["Yes"]]], "Was maize sold?", lambda([], rand(["Yes", "Yes", "Yes", "No"]))],
+   [5, [[2, ["Yes"]]], "Was sorghum sold?", lambda([], rand(["Yes", "Yes", "Yes", "No"]))],
+   [6, [[3, ["Yes"]]], "Was millet sold?", lambda([], rand(["Yes", "Yes", "Yes", "No"]))],
+    
+   [7, [[4, ["Yes"]]], "Maize profit", lambda([], round(random_normal(maize_mean, maize_sd)))],
+   [8, [[5, ["Yes"]]], "Sorghum profit", lambda([], round(random_normal(sorghum_mean, sorghum_sd)))],
+   [9, [[6, ["Yes"]]], "Millet profit", lambda([], round(random_normal(millet_mean, sorghum_sd)))]
 ];
 
 /* ---------- END OF QUESTION AUTHOR INPUTS */
@@ -184,48 +188,37 @@ pos_to_coords(num):=block(
 
 /* ---------- DATA SET GENERATION */
 
-/* Basic variables from inputs */
-number_factors: length(factors_info);
-number_rows: product(length(factors_info[i]),i,1,length(factors_info));
 data_set: [];
-
-/* Generate all combinations of factors */
-for i: 1 thru number_rows do (
-    coords: pos_to_coords(i),
-    label_value: create_label(coords),
-    data_set: append(data_set, [label_value])
-);
 
 /* For each row of factors, fill in the answers to the questions */
 for i: 1 thru number_rows step 1 do (
-    /* Extract the row from the data set and determine the crop being considered */
-    row: data_set[i],
-    crop_data: sublist(factors_info[2], lambda([x], is(x[2]=row[2])))[1],
     
+    row: [],
+    
+    /* For each question in the survey, fill in the row */
     for question in questions_posed do (
+        
         /* Check whether the question dependencies are satisfied */
         dep_satisfied: true,
         for dep in question[2] do (
-            if not(member(row[number_factors+dep[1]], dep[2])) then dep_satisfied:false
+            if not(member(row[dep[1]], dep[2])) then dep_satisfied:false
         ),
         
         /* If the dependencies are satisfied, add question answer to the row, else add an empty string */
-        if dep_satisfied then block(
-            if question[1] = 1 or question[1] = 2 then
-                row:append(row, [apply(question[4], [])]) 
-            else if question[1] = 3 then
-                row:append(row, [round(rhs(apply(question[4], [mean=crop_data[1], sd=profit_sd])))]))
+        if dep_satisfied then
+            row:append(row, [apply(question[4], [])])
         else 
             row: append(row, [""])
     ),
     
-   /* Update the row in the data set */
-    data_set[i]: row
+    /* Update the row in the data set */
+    data_set: append(data_set, [row])
+    
 );
 
 /* Add headers to columns */
 data_set: append(
-    [append(factor_names, makelist(x[3], x, questions_posed))],
+    makelist(x[3], x, questions_posed),
     data_set
 );
 
