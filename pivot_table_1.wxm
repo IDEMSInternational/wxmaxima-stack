@@ -43,9 +43,9 @@ stacklocation:"C:/Users/James/OneDrive/Documents/007_wxMaxima/STACK_sandbox"$
 
 /*Wastalas details*/
 /*
-maximaplatform:""$
-stacklocation:""$
-stacktmplocation:""$
+maximaplatform:"win"$
+stacklocation:"c:/tmp/stackroot"$
+stacktmplocation:"c:/tmp/stackroot"$
 */
 
 /* For MS platforms you normally need to explicitly set the path.
