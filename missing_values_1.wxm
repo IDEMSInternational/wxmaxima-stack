@@ -184,6 +184,19 @@ pos_to_coords(num):=block(
     return(makelist(mod(floor((num-1)/clock[i]),factor_lengths[i])+1, i, 1, number_factors))
 );
 
+/* Function to determine which of THREE items given ["name", *value*] is the largest, including joint largests */
+/* Input: three items ["name", *value*] */
+/* Output: name(s) of largest item(s) */
+max_item(item1, item2, item3) := block(
+    if item1[2]>item2[2] and item1[2]>item3[2] then item1[1]
+    else if item2[2]>item1[2] and item2[2]>item3[2] then item2[1]
+    else if item3[2]>item1[2] and item3[2]>item2[2] then item3[1]
+    else if item1[2]=item2[2] and item1[2]=item3[2] then "All equal"
+    else if item1[2]=item2[2] then sconcat(item1[1], " and ", item2[1])
+    else if item1[2]=item3[2] then sconcat(item1[1], " and ", item3[1])
+    else if item2[2]=item3[2] then sconcat(item2[1], " and ", item3[1])
+);
+
 /* ---------- END OF FUNCTIONS */
 
 /* ---------- DATA SET GENERATION */
@@ -235,42 +248,34 @@ mean_sold_sorg_profit: mean(makelist(x[8], x, sorg_sold_list));
 mill_sold_list: sublist(data_set, lambda([x], is(x[6]="Yes")));
 mean_sold_mill_profit: mean(makelist(x[9], x, mill_sold_list));
 
-most_profit_sold: if mean_sold_maize_profit>mean_sold_sorg_profit and mean_sold_maize_profit>mean_sold_mill_profit then "Maize"
-    else if mean_sold_sorg_profit>mean_sold_mill_profit and mean_sold_sorg_profit>mean_sold_maize_profit then "Sorghum"
-    else if mean_sold_mill_profit>mean_sold_maize_profit and mean_sold_mill_profit>mean_sold_sorg_profit then "Millet"
-    else if mean_sold_maize_profit=mean_sold_sorg_profit and mean_sold_maize_profit=mean_sold_sorg_profit then "All equal"
-    else if mean_sold_maize_profit=mean_sold_sorg_profit then "Maize and Sorghum"
-    else if mean_sold_maize_profit=mean_sold_mill_profit then "Maize and Millet"
-    else if mean_sold_sorg_profit=mean_sold_mill_profit then "Sorghum and Millet";
+most_profit_sold: max_item(
+    ["Maize", mean_sold_maize_profit],
+    ["Sorghum", mean_sold_sorg_profit],
+    ["Millet", mean_sold_mill_profit]
+);
 
-least_profit_sold: if mean_sold_maize_profit<mean_sold_sorg_profit and mean_sold_maize_profit<mean_sold_mill_profit then "Maize"
-    else if mean_sold_sorg_profit<mean_sold_mill_profit and mean_sold_sorg_profit<mean_sold_maize_profit then "Sorghum"
-    else if mean_sold_mill_profit<mean_sold_maize_profit and mean_sold_mill_profit<mean_sold_sorg_profit then "Millet"
-    else if mean_sold_maize_profit=mean_sold_sorg_profit and mean_sold_maize_profit=mean_sold_sorg_profit then "All equal"
-    else if mean_sold_maize_profit=mean_sold_sorg_profit then "Maize and Sorghum"
-    else if mean_sold_maize_profit=mean_sold_mill_profit then "Maize and Millet"
-    else if mean_sold_sorg_profit=mean_sold_mill_profit then "Sorghum and Millet";
+least_profit_sold: max_item(
+    ["Maize", -mean_sold_maize_profit],
+    ["Sorghum", -mean_sold_sorg_profit],
+    ["Millet", -mean_sold_mill_profit]
+);
 
 /* Results if all missing values are set to be zero */
 mean_all_maize_profit: mean(makelist(if x[4]="Yes" then x[7] else 0, x, data_set));
 mean_all_sorg_profit: mean(makelist(if x[5]="Yes" then x[8] else 0, x, data_set));
 mean_all_mill_profit: mean(makelist(if x[6]="Yes" then x[9] else 0, x, data_set));
 
-most_profit_all: if mean_all_maize_profit>mean_all_sorg_profit and mean_all_maize_profit>mean_all_mill_profit then "Maize"
-    else if mean_all_sorg_profit>mean_all_mill_profit and mean_all_sorg_profit>mean_all_maize_profit then "Sorghum"
-    else if mean_all_mill_profit>mean_all_maize_profit and mean_all_mill_profit>mean_all_sorg_profit then "Millet"
-    else if mean_all_maize_profit=mean_all_sorg_profit and mean_all_maize_profit=mean_all_sorg_profit then "All equal"
-    else if mean_all_maize_profit=mean_all_sorg_profit then "Maize and Sorghum"
-    else if mean_all_maize_profit=mean_all_mill_profit then "Maize and Millet"
-    else if mean_all_sorg_profit=mean_all_mill_profit then "Sorghum and Millet";
+most_profit_sold: max_item(
+    ["Maize", mean_all_maize_profit],
+    ["Sorghum", mean_all_sorg_profit],
+    ["Millet", mean_all_mill_profit]
+);
 
-least_profit_all: if mean_all_maize_profit<mean_all_sorg_profit and mean_all_maize_profit<mean_all_mill_profit then "Maize"
-    else if mean_all_sorg_profit<mean_all_mill_profit and mean_all_sorg_profit<mean_all_maize_profit then "Sorghum"
-    else if mean_all_mill_profit<mean_all_maize_profit and mean_all_mill_profit<mean_all_sorg_profit then "Millet"
-    else if mean_all_maize_profit=mean_all_sorg_profit and mean_all_maize_profit=mean_all_sorg_profit then "All equal"
-    else if mean_all_maize_profit=mean_all_sorg_profit then "Maize and Sorghum"
-    else if mean_all_maize_profit=mean_all_mill_profit then "Maize and Millet"
-    else if mean_all_sorg_profit=mean_all_mill_profit then "Sorghum and Millet";
+least_profit_sold: max_item(
+    ["Maize", -mean_all_maize_profit],
+    ["Sorghum", -mean_all_sorg_profit],
+    ["Millet", -mean_all_mill_profit]
+);
 
 /* Results if missing values are ignored when the crop was not grown but set to zero if not sold */
 maize_planted_list: sublist(data_set, lambda([x], is(x[1]="Yes")));
@@ -280,21 +285,17 @@ mean_planted_sorg_profit: mean(makelist(if x[5]="Yes" then x[8] else 0, x, sorg_
 mill_planted_list: sublist(data_set, lambda([x], is(x[3]="Yes")));
 mean_planted_mill_profit: mean(makelist(if x[6]="Yes" then x[9] else 0, x, mill_planted_list));
 
-most_profit_sold: if mean_pos_maize_profit>mean_pos_sorg_profit and mean_pos_maize_profit>mean_pos_mill_profit then "Maize"
-    else if mean_pos_sorg_profit>mean_pos_mill_profit and mean_pos_sorg_profit>mean_pos_maize_profit then "Sorghum"
-    else if mean_pos_mill_profit>mean_pos_maize_profit and mean_pos_mill_profit>mean_pos_sorg_profit then "Millet"
-    else if mean_pos_maize_profit=mean_pos_sorg_profit and mean_pos_maize_profit=mean_pos_sorg_profit then "All equal"
-    else if mean_pos_maize_profit=mean_pos_sorg_profit then "Maize and Sorghum"
-    else if mean_pos_maize_profit=mean_pos_mill_profit then "Maize and Millet"
-    else if mean_pos_sorg_profit=mean_pos_mill_profit then "Sorghum and Millet";
+most_profit_sold: max_item(
+    ["Maize", mean_planted_maize_profit],
+    ["Sorghum", mean_planted_sorg_profit],
+    ["Millet", mean_planted_mill_profit]
+);
 
-least_profit_sold: if mean_pos_maize_profit<mean_pos_sorg_profit and mean_pos_maize_profit<mean_pos_mill_profit then "Maize"
-    else if mean_pos_sorg_profit<mean_pos_mill_profit and mean_pos_sorg_profit<mean_pos_maize_profit then "Sorghum"
-    else if mean_pos_mill_profit<mean_pos_maize_profit and mean_pos_mill_profit<mean_pos_sorg_profit then "Millet"
-    else if mean_pos_maize_profit=mean_pos_sorg_profit and mean_pos_maize_profit=mean_pos_sorg_profit then "All equal"
-    else if mean_pos_maize_profit=mean_pos_sorg_profit then "Maize and Sorghum"
-    else if mean_pos_maize_profit=mean_pos_mill_profit then "Maize and Millet"
-    else if mean_pos_sorg_profit=mean_pos_mill_profit then "Sorghum and Millet";
+least_profit_sold: max_item(
+    ["Maize", -mean_planted_maize_profit],
+    ["Sorghum", -mean_planted_sorg_profit],
+    ["Millet", -mean_planted_mill_profit]
+);
 
 /* ---------- END OF QUESTION VARIABLES */
 /* [wxMaxima: input   end   ] */
