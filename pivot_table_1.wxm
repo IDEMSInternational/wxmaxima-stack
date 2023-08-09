@@ -220,6 +220,7 @@ ta_3: if quest_expr3="Mean" then mean(fert1_var1_yields)
     else if quest_expr3="Minimum" then first(sort(fert1_var1_yields))
     else if quest_expr3="Maximum" then last(sort(fert1_var1_yields))
     else if quest_expr3="Median" then median(fert1_var1_yields);
+    
 
 /* [wxMaxima: input   end   ] */
 
