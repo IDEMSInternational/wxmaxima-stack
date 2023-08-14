@@ -1,5 +1,5 @@
 [
-    ["maize", "sorghum", "millet", "sold_maize", "sold_sorghum", "sold_millet", "sold_maize_profit", "sold_sorghum_profit", "sold_millet_profit"],
+    ["Was maize grown?", "Was sorghum grown?", "Was millet grown?", "Was maize sold?", "Was sorghum sold?", "Was millet sold?", "Maize profit", "Sorghum profit", "Millet profit"],
     ["Yes", "Yes", "No", "Yes", "Yes", "No", "98", "139", ""],
     ["Yes", "Yes", "Yes", "Yes", "No", "Yes", "103", "", "88"],
     ["No", "Yes", "Yes", "No", "No", "Yes", "", "", "93"],
