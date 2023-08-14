@@ -296,6 +296,21 @@ least_profit_sold: max_item(
     ["Sorghum", -mean_planted_sorg_profit],
     ["Millet", -mean_planted_mill_profit]
 );
+/*prt implementing feedback*/
+/*node 1:checks for correct answer*/
+/*node 2:checks if sorghum is the most profitable and Millet the least profitable*/
+check_1_ta1:if ta_1=sorghum and ta_2=Millet then 1 else if ta_1#sorghum and ta_2#Millet then "0" ;
+/*checks  sorghum is the most profitable to question 1, and maize is the least profitable*/
+check_2:if ta_1=Maize and ta_2=Millet then 1 else if ta_1#Maize and ta_2#Sorghum then 0;
+
+/*checks  If maize is the most profitable to question 1, and millet is the least profitable*/
+check_3:if ta_1=Maize and ta_2=Sorghum then 1 else if ta_1#Maize and ta_2#Sorghum then 0;
+
+/*checks  If millet is the most profitable to question 1, and maize is the least profitable*/
+check_4:if ta_1=Millet and ta_2=Maize then 1 else if ta_1#Millet and ta_2#Maize then 0;
+
+/*checks If millet is the most profitable to question 1, and sorghum is the least profitable:*/
+check_5:if ta_1=Millet and ta_2=Sorghum then 1 else if ta_1#Millet and ta_2#Maize then 0;
 
 /* ---------- END OF QUESTION VARIABLES */
 /* [wxMaxima: input   end   ] */
