@@ -181,40 +181,39 @@ if is_balanced then (
     number_data_entries: random_permutation(append(number_data_entries, [number_rows - total_entries]))
 );
 
-data_set: random_permutation(
+/* Create the data set containing the specified number of each permutation of the factor values */
+data_set: random_permutation(apply(append,
     makelist(
         makelist(
             makelist(factor_values[i][pos_to_coords(k)[i]], i, 1, length(factor_values)), 
             j, 1, number_data_entries[k]),
         k, 1, number_permutations
     )
-);
+));
 
-/* Rotate the data to be given in rows rather than columns of each factor, also add header row */
-/*data_set: append(
+/* Give each element in the data set an index number */
+data_set: append(
     [append(["Farm number"], factor_names)], 
-    makelist(append([i], makelist(column_data[j][i], j, 1, number_factors)), i, 1, number_rows)
-);*/
+    makelist(append([i], data_set[i]), i, 1, number_rows)
+);
 
 /* ------------- END OF DATA SET GENERATION */
 
 /* table data */
-/*
-ta_1: length(sublist(data_set, lambda([x], is(x[2]="Variety 1" and x[3]="Fertiliser 1"))));
-ta_2: length(sublist(data_set, lambda([x], is(x[2]="Variety 2" and x[3]="Fertiliser 1"))));
-ta_3: length(sublist(data_set, lambda([x], is(x[2]="Variety 3" and x[3]="Fertiliser 1"))));
+ta_1: number_data_entries[1];
+ta_2: number_data_entries[2];
+ta_3: number_data_entries[3];
 
-ta_5: length(sublist(data_set, lambda([x], is(x[2]="Variety 1" and x[3]="Fertiliser 2"))));
-ta_6: length(sublist(data_set, lambda([x], is(x[2]="Variety 2" and x[3]="Fertiliser 2"))));
-ta_7: length(sublist(data_set, lambda([x], is(x[2]="Variety 3" and x[3]="Fertiliser 2"))));
+ta_5: number_data_entries[4];
+ta_6: number_data_entries[5];
+ta_7: number_data_entries[6];
 
-ta_9: length(sublist(data_set, lambda([x], is(x[2]="Variety 1" and x[3]="Fertiliser 3"))));
-ta_10: length(sublist(data_set, lambda([x], is(x[2]="Variety 2" and x[3]="Fertiliser 3"))));
-ta_11: length(sublist(data_set, lambda([x], is(x[2]="Variety 3" and x[3]="Fertiliser 3"))));
-*/
+ta_9: number_data_entries[7];
+ta_10: number_data_entries[8];
+ta_11: number_data_entries[9];
+
 
 /* totals */
-/*
 ta_4: ta_1 + ta_2 + ta_3;
 ta_8: ta_5 + ta_6 + ta_7;
 ta_12: ta_9 + ta_10 + ta_11;
@@ -222,12 +221,10 @@ ta_12: ta_9 + ta_10 + ta_11;
 ta_13: ta_1 + ta_5 + ta_9;
 ta_14: ta_2 + ta_6 + ta_10;
 ta_15: ta_3 + ta_7 + ta_11;
-*/
 
 /* balanced? */
-/*
 ma_16: [["Yes", is_balanced], ["No", not(is_balanced)]];
-*/;
+
 /* [wxMaxima: input   end   ] */
 
 
