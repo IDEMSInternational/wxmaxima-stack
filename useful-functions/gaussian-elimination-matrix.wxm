@@ -20,9 +20,44 @@ Note, that plots *will not work* in this sandbox.
 
 /* [wxMaxima: input   start ] */
 /* No trailing slash. */
+/*Santiago, Emmaculate details*/
+/*
+maximaplatform:"win"$
+stacklocation:"c:/tmp/stackroot"$
+stacktmplocation:"c:/tmp/stackroot"$
+*/
+
+/*Mary details*/
+/*
+maximaplatform:""$
+stacklocation:""$
+stacktmplocation:""$
+*/
+
+/*Dan details*/
+
 maximaplatform:"win"$
 stacklocation:"C:/Users/James/OneDrive/Documents/007_wxMaxima/STACK_sandbox"$
 stacklocation:"C:/Users/James/OneDrive/Documents/007_wxMaxima/STACK_sandbox"$
+
+
+/*Wastalas details*/
+/*
+maximaplatform:""$
+stacklocation:""$
+stacktmplocation:""$
+*/
+
+/* For MS platforms you normally need to explicitly set the path.
+   Use the forward slash as a directory seperator.
+   You have cloned your code into c:/tmp/stackroot   
+*/
+
+/*
+maximaplatform:"win"$
+stacklocation:"c:/tmp/stackroot/stack"$
+*/
+
 
 /****************************************************
    There should be no need to edit below this line.  
